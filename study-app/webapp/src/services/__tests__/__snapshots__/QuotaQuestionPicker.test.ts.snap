@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`QuotaQuestionPicker picks the highest-weighted questions per domain up to its quota 1`] = `
+[
+  1,
+  2,
+  3,
+]
+`;

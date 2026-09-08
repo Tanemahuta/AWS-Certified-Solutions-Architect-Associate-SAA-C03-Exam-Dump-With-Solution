@@ -1,0 +1,24 @@
+name: verify
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  gate:
+    uses: ./.github/workflows/pr-gate-callable.yml
+    permissions:
+      pull-requests: read
+
+  verify:
+    needs: [gate]
+    if: needs.gate.outputs.run == 'true'
+    uses: ./.github/workflows/verify-callable.yml
+    permissions:
+      contents: read

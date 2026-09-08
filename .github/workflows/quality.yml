@@ -1,0 +1,26 @@
+name: dependency quality
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+  merge_group:
+    types: [checks_requested]
+  schedule:
+    - cron: '41 6 * * 1'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  gate:
+    uses: ./.github/workflows/pr-gate-callable.yml
+    permissions:
+      pull-requests: read
+
+  quality:
+    needs: [gate]
+    if: needs.gate.outputs.run == 'true'
+    uses: ./.github/workflows/quality-callable.yml
+    permissions:
+      contents: read

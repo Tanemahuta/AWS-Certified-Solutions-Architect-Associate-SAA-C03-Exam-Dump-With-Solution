@@ -1,0 +1,18 @@
+name: setup-study-app
+description: Install Node.js, pnpm and the study app dependencies
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v6.1.0
+      with:
+        package_json_file: study-app/package.json
+    - uses: actions/setup-node@v7.0.0
+      with:
+        node-version-file: study-app/package.json
+        cache: pnpm
+        cache-dependency-path: study-app/pnpm-lock.yaml
+    - name: Install dependencies
+      shell: bash
+      working-directory: study-app
+      run: pnpm install --frozen-lockfile

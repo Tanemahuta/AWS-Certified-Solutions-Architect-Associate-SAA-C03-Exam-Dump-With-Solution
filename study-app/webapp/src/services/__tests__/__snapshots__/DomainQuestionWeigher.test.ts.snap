@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`DomainQuestionWeigher tags every question with its domain and a neutral weight when there are no statistics 1`] = `
+[
+  {
+    "domain": "Design Secure Architectures",
+    "index": 0,
+    "weight": 3,
+  },
+  {
+    "domain": "Design Resilient Architectures",
+    "index": 1,
+    "weight": 3,
+  },
+  {
+    "domain": "Design Secure Architectures",
+    "index": 2,
+    "weight": 3,
+  },
+]
+`;

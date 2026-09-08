@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`DomainQuotaCalculator caps a domain's quota at its pool size and redistributes the shortfall to other domains 1`] = `
+{
+  "Design Cost-Optimized Architectures": 19,
+  "Design High-Performing Architectures": 21,
+  "Design Resilient Architectures": 23,
+  "Design Secure Architectures": 2,
+}
+`;
+
+exports[`DomainQuotaCalculator splits a 100-question session by the official AWS domain percentages when the pool is abundant 1`] = `
+{
+  "Design Cost-Optimized Architectures": 20,
+  "Design High-Performing Architectures": 24,
+  "Design Resilient Architectures": 26,
+  "Design Secure Architectures": 30,
+}
+`;

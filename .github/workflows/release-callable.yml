@@ -1,0 +1,58 @@
+name: release
+
+on:
+  workflow_call:
+
+permissions: {}
+
+jobs:
+  verify:
+    name: verify
+    uses: ./.github/workflows/verify-callable.yml
+    permissions:
+      contents: read
+
+  codeql:
+    name: CodeQL
+    uses: ./.github/workflows/codeql-callable.yml
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+  quality:
+    name: dependency quality
+    uses: ./.github/workflows/quality-callable.yml
+    permissions:
+      contents: read
+
+  release:
+    name: Publish release
+    needs: [verify, codeql, quality]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: study-app
+    steps:
+      - name: Check out pushed commit and history
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+      - uses: ./.github/actions/setup-study-app
+      - name: Download web app built by verify
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: study-app
+          path: study-app/dist
+      - name: Calculate version and publish release with semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE_TOKEN || github.token }}
+        run: pnpm run release

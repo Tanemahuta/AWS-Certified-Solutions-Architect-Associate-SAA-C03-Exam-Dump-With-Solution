@@ -1,0 +1,1004 @@
+{
+  "1": {
+    "choices": [
+      {
+        "explanation": "S3 Transfer Acceleration uses AWS edge locations to accelerate uploads into a single S3 bucket from globally distributed sites. Multipart upload is appropriate for very large objects and keeps the design operationally simple."
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "20": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "EBS Fast Snapshot Restore creates volumes from snapshots that are fully initialized at creation, eliminating first-read latency and immediately delivering provisioned performance. That directly matches the need to clone data quickly while keeping production and test volumes independent."
+      }
+    ]
+  },
+  "151": {
+    "choices": [
+      {
+        "explanation": "Use preventive controls, not detection-only controls. AWS Control Tower data-residency controls can restrict Regions, and AWS Organizations SCPs can deny creation or attachment of internet connectivity and deny use of other Regions."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "Use preventive controls, not detection-only controls. AWS Control Tower data-residency controls can restrict Regions, and AWS Organizations SCPs can deny creation or attachment of internet connectivity and deny use of other Regions."
+      },
+      {},
+      {}
+    ]
+  },
+  "158": {
+    "choices": [
+      {
+        "explanation": "CloudFront is the CDN in these choices and can accelerate both live HTTP-based streaming and video-on-demand for a global audience. Global Accelerator improves network paths to regional endpoints but is not a CDN/cache for this use case."
+      },
+      {
+        "correct": false
+      },
+      {},
+      {}
+    ]
+  },
+  "159": {
+    "choices": [
+      {
+        "explanation": "Use an API Gateway usage plan/API key to restrict requests to known clients and AWS WAF to block malicious bot traffic. WAF filters requests before they reach Lambda, reducing unwanted invocation load."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "Use an API Gateway usage plan/API key to restrict requests to known clients and AWS WAF to block malicious bot traffic. WAF filters requests before they reach Lambda, reducing unwanted invocation load."
+      },
+      {},
+      {}
+    ]
+  },
+  "160": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "explanation": "S3 Standard is durable, low-cost object storage with millisecond access. Glacier does not meet the millisecond-access requirement, while OpenSearch and RDS are unnecessarily expensive for a 300 MB backup."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "178": {
+    "choices": [
+      {
+        "explanation": "AWS Backup can centrally back up both EC2/EBS and RDS resources and copy recovery points across Regions. That is less operational work than managing separate snapshot and replication mechanisms."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "179": {
+    "choices": [
+      {
+        "explanation": "Attach an IAM role to the EC2 instance that permits reading the SecureString parameter and decrypting it with the KMS key. IAM policies are attached to identities/roles, not directly to an EC2 instance."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "184": {
+    "choices": [
+      {
+        "explanation": "A Lambda function must be configured for VPC access so its ENIs can use the VPC routing to the virtual private gateway and existing Direct Connect path. No additional VPN or public IP is required."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "191": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "Move reporting reads to an RDS read replica so analytical queries no longer compete with order-processing traffic on the primary database."
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "193": {
+    "choices": [
+      {},
+      {
+        "correct": true,
+        "explanation": "ElastiCache for Redis can cache frequently read database data and supports replication/Multi-AZ high availability. Memcached does not provide the same HA capabilities."
+      },
+      {},
+      {}
+    ]
+  },
+  "194": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "Two database EC2 instances in different Availability Zones with database-level replication and clustering provide redundancy and automatic failover. A single instance with recovery or AMI-based replacement is not highly available."
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "195": {
+    "choices": [
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "SQS provides durable buffering between order submission and EC2 workers. If workers fail, messages remain available for retry, preventing users from having to resubmit orders."
+      },
+      {}
+    ]
+  },
+  "196": {
+    "choices": [
+      {},
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "DynamoDB TTL is purpose-built for automatic expiry. Store an expiration timestamp on each item and configure that attribute as the table TTL to remove data older than 30 days with minimal operational effort."
+      }
+    ]
+  },
+  "198": {
+    "choices": [
+      {},
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "EKS preserves the Kubernetes deployment model, Fargate removes worker-node management, and DocumentDB provides MongoDB-compatible APIs. This combination minimizes code, deployment, and infrastructure changes."
+      }
+    ]
+  },
+  "199": {
+    "choices": [
+      {},
+      {
+        "correct": true,
+        "explanation": "Amazon Transcribe provides speaker diarization and transcription. Athena can query transcript files stored in S3, where lifecycle/retention policies can satisfy the seven-year retention requirement."
+      },
+      {},
+      {}
+    ]
+  },
+  "200": {
+    "choices": [
+      {},
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "API Gateway has a managed Amazon Cognito user-pool authorizer. It validates Cognito tokens without custom Lambda authorization logic, minimizing operational overhead."
+      }
+    ]
+  },
+  "207": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "SQS buffers incoming requests so temporary DynamoDB write-capacity pressure does not lose requests. Lambda can drain the queue at a sustainable rate. DAX is primarily a read cache and API Gateway throttling would reject requests rather than preserve them."
+      }
+    ]
+  },
+  "232": {
+    "choices": [
+      {},
+      {
+        "correct": false
+      },
+      {
+        "explanation": "VPC Flow Logs record network connections. Sending them to CloudWatch Logs allows metric filters for TCP 22/3389 and a CloudWatch alarm can notify operations when SSH or RDP connections are observed."
+      },
+      {}
+    ]
+  },
+  "235": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {},
+      {
+        "correct": true,
+        "explanation": "Oracle-to-Aurora PostgreSQL is heterogeneous, so use AWS Schema Conversion Tool for schema conversion and AWS DMS with full load plus CDC to keep source and target synchronized while applications migrate gradually. A memory-optimized replication instance is appropriate for a high read/write workload."
+      },
+      {}
+    ]
+  },
+  "268": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "The stated bottleneck is database read performance. ElastiCache reduces repeated reads and latency. RDS Proxy addresses connection pooling and connection storms, not a read-I/O bottleneck."
+      },
+      {
+        "correct": false
+      },
+      {},
+      {}
+    ]
+  },
+  "315": {
+    "choices": [
+      {},
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "Amazon Inspector is the AWS vulnerability-management service for EC2 workloads. It continuously assesses instances for software vulnerabilities and can feed findings into automated reporting workflows."
+      }
+    ]
+  },
+  "651": {
+    "choices": [
+      {},
+      {},
+      {
+        "explanation": "S3 Standard-IA keeps multi-AZ durability for the infrequently accessed period. Glacier Instant Retrieval meets the instant-access requirement after 360 days, and Deep Archive is the lowest-cost tier that still supports retrieval within 12 hours for long-term audit data."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "652": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "explanation": "A transient EMR cluster avoids paying for idle capacity between six-hour daily runs. Keep primary and core nodes on On-Demand instances so data is not lost, and use Spot only for replaceable task nodes."
+      },
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "653": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "explanation": "CloudTrail events can trigger EventBridge, which invokes Lambda immediately after resource creation. Lambda can look up the creator's cost center in RDS and apply the correct tag. SCPs cannot dynamically derive tag values from a database."
+      },
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "654": {
+    "choices": [
+      {},
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "explanation": "Use CloudFront + S3 for highly available static content, an ALB + ECS Fargate for the PHP application, and Multi-AZ ElastiCache for Redis sessions. This removes the single EC2/Redis failure point and uses managed services."
+      }
+    ]
+  },
+  "656": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {},
+      {
+        "correct": false
+      },
+      {
+        "explanation": "S3 Standard-IA is highly available and cost-effective for objects read only once or twice per year. EBS/EFS require servers or file-system capacity, and S3 Standard costs more for infrequent access."
+      }
+    ]
+  },
+  "657": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "explanation": "A customer-managed VPC prefix list centralizes the office CIDRs. Sharing it through AWS RAM lets security groups in multiple accounts reference the same list, so a CIDR change is made once."
+      },
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "659": {
+    "choices": [
+      {},
+      {},
+      {
+        "explanation": "A Snowball Edge Storage Optimized device avoids consuming the already 90%-utilized VPN and is designed for secure offline transfer of tens of terabytes within a migration window like this."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "662": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {},
+      {},
+      {
+        "explanation": "Delete nonessential snapshots and use Amazon Data Lifecycle Manager to automate snapshot creation and retention. EBS volumes cannot simply be shrunk with Elastic Volumes, and manual cleanup has more operational overhead."
+      }
+    ]
+  },
+  "663": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {},
+      {
+        "explanation": "The best option given is the one that restricts S3 by the ECS task role and restricts database network reachability with RDS security-group controls. Encryption alone does not ensure that only ECS can access the data."
+      },
+      {}
+    ]
+  },
+  "664": {
+    "choices": [
+      {
+        "explanation": "The workload has rare, abrupt CPU spikes. Burstable instances in unlimited mode can absorb short spikes cost-effectively, and request-based scaling reacts automatically to actual demand. Scheduled scaling cannot predict irregular twice-monthly events."
+      },
+      {},
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "668": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {},
+      {},
+      {
+        "explanation": "An AWS Organizations tag policy can define allowed values for the application-name tag and enforce compliance across member accounts. IAM groups are not the right organization-wide mechanism for IAM Identity Center users."
+      }
+    ]
+  },
+  "669": {
+    "choices": [
+      {},
+      {},
+      {
+        "explanation": "AWS Secrets Manager integrates with RDS and can rotate database credentials automatically on a schedule, avoiding custom Lambda scheduling or manual CLI changes."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "670": {
+    "choices": [
+      {},
+      {
+        "explanation": "The workload is predictable and runs only four hours per week. Provisioned capacity sized to the known RCU/WCU demand is more cost-effective than on-demand or long-term reserved capacity for a table that is otherwise idle."
+      },
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "671": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "explanation": "AWS Cost Anomaly Detection is designed to identify unusual spend and send alerts to stakeholders. A zero-spend budget is for detecting any spend, not anomalies in an existing workload."
+      },
+      {},
+      {}
+    ]
+  },
+  "672": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "explanation": "AWS Glue can crawl the S3 data to build metadata, and Athena can query the files directly in S3 without provisioning a cluster. This is the lowest-operational-overhead path for quick ad-hoc analysis."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "676": {
+    "choices": [
+      {},
+      {
+        "explanation": "VPC Flow Logs can publish to CloudWatch Logs, and Kinesis Data Firehose can deliver the log stream to OpenSearch Service with minimal custom processing. CloudTrail is not a destination for VPC Flow Logs."
+      },
+      {
+        "correct": false
+      },
+      {}
+    ]
+  },
+  "677": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "For an infrequently used development cluster, a managed node group consisting only of Spot Instances is the most cost-effective choice while still letting EKS manage the nodes. Mixing in On-Demand capacity adds cost that the requirement does not justify."
+      },
+      {
+        "correct": false
+      },
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "678": {
+    "choices": [
+      {},
+      {
+        "explanation": "A customer-managed KMS key gives the company control over key policies, enable/disable state, and rotation while keeping key management managed by AWS. SSE-S3 and AWS-managed keys do not provide the same control."
+      },
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "680": {
+    "choices": [
+      {
+        "explanation": "AWS DataSync supports S3 and EFS locations and can transfer only changed data. That avoids custom Lambda/EC2 synchronization logic and prevents unchanged destination files from being overwritten."
+      },
+      {},
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "681": {
+    "choices": [
+      {
+        "explanation": "A customer-managed KMS key can encrypt EBS volumes and gives the company control over key rotation. AWS-owned keys are not customer-controlled, and imported key material adds operational overhead."
+      },
+      {},
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "683": {
+    "choices": [
+      {
+        "correct": true
+      },
+      {},
+      {
+        "correct": true
+      },
+      {},
+      {
+        "correct": false
+      }
+    ]
+  },
+  "366": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "API Gateway usage plans and API keys are the intended exam answer for separating subscribed clients with the least operational overhead among these choices. Caching/throttling alone and WAF do not implement subscription access, and DynamoDB fine-grained IAM would require a more complex authorization path."
+      }
+    ]
+  },
+  "539": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "AWS Elastic Disaster Recovery continuously replicates block-level changes to a low-cost staging area in AWS and can launch recovery instances during a disaster. This is designed for low RPO/RTO DR while avoiding the cost of a continuously running warm standby. Nightly backups cannot meet an RPO of 30 seconds."
+      },
+      {
+        "correct": false,
+        "explanation": "The key requirements are RPO ≤ 30 seconds, RTO ≤ 60 minutes, and minimum cost.<br/>\nAWS Elastic Disaster Recovery continuously replicates block-level disk changes from the on-premises SQL Server VM into a low-cost staging area in AWS. The actual production-sized EC2 instance does not need to be running all the time. During a disaster, DRS launches the replicated server as an EC2 instance.<br/>\nThat makes it essentially a pilot-light DR architecture:<br/>\nOn-prem SQL Server VM → continuous block replication → cheap AWS staging resources → launch EC2 during disaster<br/>\nThis fits very well because DRS typically provides an RPO measured in seconds and recovery in minutes, comfortably satisfying the 30-second RPO and 60-minute RTO.<br/>\nIt is also cheaper than maintaining a fully running SQL Server environment in AWS."
+      }
+    ]
+  },
+  "219": {
+    "choices": [
+      {
+        "correct": false,
+        "explanation": "A company's application is having performance issues. The application is stateful and needs to complete in-memory tasks on Amazon EC2 instances. The company used AWS CloudFormation to deploy infrastructure and used the M5 EC2 instance family. As traffic increased, the application performance degraded. Users are reporting delays when the users attempt to access the application. Which solution will resolve these issues in the MOST operationally efficient way?"
+      },
+      {},
+      {},
+      {
+        "correct": true,
+        "explanation": "R is memory optimized, extra metrics are required for memory"
+      }
+    ]
+  },
+  "414": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "the business system already writes CSVs to a network share. S3 File Gateway exposes an SMB/NFS share, but files written there are asynchronously uploaded into S3, so the application can keep behaving like it is writing to a normal file share."
+      },
+      {},
+      {}
+    ]
+  },
+  "67": {
+    "choices": [
+      {},
+      {},
+      {},
+      {
+        "explanation": "Increasing the timeout for the message visibility will increase the time the application has to process the message before it becomes visible to other consumers."
+      }
+    ]
+  },
+  "88": {
+    "choices": [
+      {
+        "explanation": "With Requester Pays, the requesting AWS account pays the request and data-download costs instead. The original company still pays for storing the 3 TB in S3."
+      },
+      {},
+      {},
+      {}
+    ]
+  },
+  "2": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "Amazon Athena queries data directly in S3 with standard SQL and is serverless, so it requires the least architectural change and operational overhead for simple on-demand queries."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "6": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "AWS Snowball Edge is designed for offline bulk transfer of tens of terabytes. It moves the 70 TB without consuming the company's network bandwidth, which directly satisfies the requirement to use the least possible network bandwidth."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "19": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "Gateway Load Balancer is purpose-built for inserting and scaling third-party virtual network appliances such as firewalls. A GWLB endpoint transparently steers application traffic to the inspection VPC before it reaches the web servers."
+      }
+    ]
+  },
+  "224": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "Route 53 multivalue answer routing can return multiple healthy records and provides DNS-level load sharing roughly at random across healthy resources."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "Placing two EC2 instances in each of two Availability Zones provides balanced capacity across AZs and avoids a single-AZ failure taking most of the fleet."
+      }
+    ]
+  },
+  "247": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "An active long-running transaction can slow read-replica creation because RDS takes a snapshot of the source. AWS recommends waiting for long-running transactions to complete first."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "The source RDS for MySQL instance must have automated backups enabled (backup retention period greater than 0) before a read replica can be created."
+      }
+    ]
+  },
+  "308": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "For consolidated billing, Trusted Advisor recommendations can be viewed from the payer/management account across linked accounts."
+      },
+      {
+        "correct": true,
+        "explanation": "The RDS Reserved Instance Optimization check is the relevant Trusted Advisor cost-optimization check for active On-Demand RDS instances that have been running long enough to establish a usage pattern."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "321": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "To enforce server-side encryption on uploads, the bucket policy can deny PutObject requests that do not include the x-amz-server-side-encryption header (or otherwise fail the required encryption condition). ACL and SecureTransport conditions do not enforce encryption at rest."
+      }
+    ]
+  },
+  "390": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "DynamoDB provides durable, highly available external storage for session state so sessions are not tied to any individual EC2 instance."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "ElastiCache for Redis is a common shared session store and can be configured with replication/Multi-AZ for high availability. Together with DynamoDB, these are the two choices that externalize session state from the web tier."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "423": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "An identity-based IAM policy can be attached to an IAM role."
+      },
+      {
+        "correct": true,
+        "explanation": "An identity-based IAM policy can be attached to an IAM user group. ECS and EC2 resources themselves are not IAM identities."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ],
+    "question": "A solutions architect wants to use the following JSON text as an identity-based policy to grant specific permissions:\n\n{\n  \"Statement\": [\n    {\n      \"Action\": [\n        \"ssm:ListDocuments\",\n        \"ssm:GetDocument\"\n      ],\n      \"Effect\": \"Allow\",\n      \"Resource\": \"*\",\n      \"Sid\": \"\"\n    }\n  ],\n  \"Version\": \"2012-10-17\"\n}\n\nWhich IAM principals can the solutions architect attach this policy to? (Choose two.)"
+  },
+  "429": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "The Allow statement permits EC2 actions only in us-east-1. The explicit Deny blocks StopInstances and TerminateInstances when MFA is absent or false. Therefore those two actions are allowed in us-east-1 only when MFA is present, while other EC2 actions remain allowed there."
+      }
+    ],
+    "question": "The following IAM policy is attached to an IAM group. This is the only policy applied to the group.\n\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Sid\": \"1\",\n      \"Effect\": \"Allow\",\n      \"Action\": \"ec2:*\",\n      \"Resource\": \"*\",\n      \"Condition\": {\n        \"StringEquals\": {\n          \"ec2:Region\": \"us-east-1\"\n        }\n      }\n    },\n    {\n      \"Sid\": \"2\",\n      \"Effect\": \"Deny\",\n      \"Action\": [\n        \"ec2:StopInstances\",\n        \"ec2:TerminateInstances\"\n      ],\n      \"Resource\": \"*\",\n      \"Condition\": {\n        \"BoolIfExists\": {\n          \"aws:MultiFactorAuthPresent\": false\n        }\n      }\n    }\n  ]\n}\n\nWhat are the effective IAM permissions of this policy for group members?"
+  },
+  "477": {
+    "choices": [
+      {
+        "correct": false,
+        "solution": "{\n  \"Action\": [\"s3:*Object\"],\n  \"Resource\": [\"arn:aws:s3:::bucket-name/*\"],\n  \"Effect\": \"Allow\"\n}"
+      },
+      {
+        "correct": false,
+        "solution": "{\n  \"Action\": [\"s3:*\"],\n  \"Resource\": [\"arn:aws:s3:::bucket-name/*\"],\n  \"Effect\": \"Allow\"\n}"
+      },
+      {
+        "correct": false,
+        "solution": "{\n  \"Action\": [\"s3:DeleteObject\"],\n  \"Resource\": [\"arn:aws:s3:::bucket-name*\"],\n  \"Effect\": \"Allow\"\n}"
+      },
+      {
+        "correct": true,
+        "explanation": "s3:DeleteObject is an object-level action, so its Resource must be an object ARN such as arn:aws:s3:::bucket-name/*. The existing bucket ARN is appropriate for s3:ListBucket. Option D adds exactly the missing least-privilege object permission.",
+        "solution": "{\n  \"Action\": [\"s3:DeleteObject\"],\n  \"Resource\": [\"arn:aws:s3:::bucket-name/*\"],\n  \"Effect\": \"Allow\"\n}"
+      }
+    ],
+    "question": "A group requires permissions to list an Amazon S3 bucket and delete objects from that bucket. An administrator has created the following IAM policy to provide access to the bucket and applied that policy to the group. The group is not able to delete objects in the bucket. The company follows least-privilege access rules.\n\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Action\": [\n        \"s3:ListBucket\",\n        \"s3:DeleteObject\"\n      ],\n      \"Resource\": [\n        \"arn:aws:s3:::bucket-name\"\n      ],\n      \"Effect\": \"Allow\"\n    }\n  ]\n}\n\nWhich statement should a solutions architect add to the policy to correct bucket access?"
+  },
+  "494": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "The explicit Deny applies when aws:SourceIp is not in 192.0.2.0/24 or 203.0.113.0/24. An explicit Deny overrides the Allow, so a termination request from outside those CIDR blocks receives AccessDenied."
+      }
+    ],
+    "question": "A company uses Amazon EC2 instances to host its internal systems. As part of a deployment operation, an administrator tries to use the AWS CLI to terminate an EC2 instance. However, the administrator receives a 403 (Access Denied) error message.\n\nThe administrator is using an IAM role that has the following IAM policy attached:\n\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\"ec2:TerminateInstances\"],\n      \"Resource\": [\"*\"]\n    },\n    {\n      \"Effect\": \"Deny\",\n      \"Action\": [\"ec2:TerminateInstances\"],\n      \"Condition\": {\n        \"NotIpAddress\": {\n          \"aws:SourceIp\": [\n            \"192.0.2.0/24\",\n            \"203.0.113.0/24\"\n          ]\n        }\n      },\n      \"Resource\": [\"*\"]\n    }\n  ]\n}\n\nWhat is the cause of the unsuccessful request?"
+  },
+  "515": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "Amazon Redshift provides the Data API for traditional, cloud-native/containerized, serverless, and event-driven applications without requiring persistent database connections."
+      },
+      {
+        "correct": true,
+        "explanation": "Amazon Redshift supports client-side and server-side encryption, making it suitable when those data-protection capabilities are required."
+      },
+      {
+        "correct": true,
+        "explanation": "Provisioned Redshift clusters can be paused and resumed, including on a schedule, so analytics workloads that run only during specified periods are a suitable use case."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "552": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "A Compute Savings Plan provides flexibility across EC2 instance families, sizes, Regions, operating systems, and compute services while still providing a commitment discount. A 1-year No Upfront plan best matches the need to change instance type and family every few months."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "599": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "The customer is responsible for providing resilient facility power and network connectivity for an Outposts rack."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "The customer is responsible for physical security and access controls in the data center that hosts the Outposts equipment."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "The customer is responsible for capacity planning, including reserving extra capacity to handle server failures, maintenance events, and workload growth. AWS maintains the Outposts hardware and underlying service infrastructure."
+      }
+    ]
+  },
+  "674": {
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "An RDS read replica offloads read traffic from the primary DB instance and is appropriate for a read-heavy workload."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "ElastiCache can cache frequently requested query results, reducing repeated reads against PostgreSQL and lowering database load."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "679": {
+    "choices": [
+      {
+        "correct": true,
+        "explanation": "S3 Object Lock is required to enforce a retention period. Enabling Object Lock automatically enables S3 Versioning on the bucket."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "A 30-day default Object Lock retention period ensures each backup object version is protected for the required retention window."
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "An S3 Lifecycle expiration rule can automatically expire the objects after the 30-day retention period. Versioning does not need to be selected separately because Object Lock enables it automatically."
+      },
+      {
+        "correct": false
+      }
+    ]
+  },
+  "96": {
+    "question": "An Amazon EC2 administrator created the following policy associated with an IAM group containing several users:\n\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"ec2:TerminateInstances\",\n      \"Resource\": \"*\",\n      \"Condition\": {\n        \"IpAddress\": {\n          \"aws:SourceIp\": \"10.100.100.0/24\"\n        }\n      }\n    },\n    {\n      \"Effect\": \"Deny\",\n      \"Action\": \"ec2:*\",\n      \"Resource\": \"*\",\n      \"Condition\": {\n        \"StringNotEquals\": {\n          \"ec2:Region\": \"us-east-1\"\n        }\n      }\n    }\n  ]\n}\n\nWhat is the effect of this policy?",
+    "choices": [
+      {
+        "correct": false
+      },
+      {
+        "correct": false
+      },
+      {
+        "correct": true,
+        "explanation": "The Allow applies only to TerminateInstances requests whose source IP is within 10.100.100.0/24. The explicit Deny blocks EC2 actions outside us-east-1. Therefore a request from 10.100.100.254 in us-east-1 can terminate an instance."
+      },
+      {
+        "correct": false
+      }
+    ]
+  }
+}
