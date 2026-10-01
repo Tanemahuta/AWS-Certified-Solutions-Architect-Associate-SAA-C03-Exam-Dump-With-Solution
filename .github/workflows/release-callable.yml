@@ -33,8 +33,6 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
-      issues: write
-      pull-requests: write
     defaults:
       run:
         working-directory: study-app
@@ -54,5 +52,6 @@ jobs:
           path: study-app/dist
       - name: Calculate version and publish release with semantic-release
         env:
-          GITHUB_TOKEN: ${{ secrets.AUTO_RELEASE_TOKEN || github.token }}
+          # The workflow token can push the version tag and create the release; tags it creates trigger no workflows.
+          GITHUB_TOKEN: ${{ github.token }}
         run: pnpm run release

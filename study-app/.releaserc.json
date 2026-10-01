@@ -7,7 +7,10 @@
     [
       "@semantic-release/github",
       {
-        "assets": [{ "path": "dist/index.html", "name": "index.html", "label": "SAA-C03 study app (index.html)" }]
+        "assets": [{ "path": "dist/index.html", "name": "index.html", "label": "SAA-C03 study app (index.html)" }],
+        "successComment": false,
+        "failComment": false,
+        "releasedLabels": false
       }
     ]
   ]
