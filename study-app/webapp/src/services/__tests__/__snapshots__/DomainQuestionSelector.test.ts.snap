@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`DomainQuestionSelector selects a full session honoring the fixed AWS domain percentages 1`] = `
+{
+  "Design Cost-Optimized Architectures": 13,
+  "Design High-Performing Architectures": 16,
+  "Design Resilient Architectures": 17,
+  "Design Secure Architectures": 19,
+}
+`;

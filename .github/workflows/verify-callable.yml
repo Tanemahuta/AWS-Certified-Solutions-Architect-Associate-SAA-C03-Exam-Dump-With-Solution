@@ -1,0 +1,64 @@
+name: verify
+
+on:
+  workflow_call: {}
+
+concurrency:
+  group: verify-${{ github.repository_id }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+defaults:
+  run:
+    working-directory: study-app
+
+jobs:
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-study-app
+      - run: pnpm run lint
+
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-study-app
+      - run: pnpm run typecheck
+
+  test:
+    name: Jest tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-study-app
+      - run: pnpm run test:coverage
+
+  build:
+    name: Build web app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-study-app
+      - run: pnpm run build
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: study-app
+          path: study-app/dist/index.html
+          if-no-files-found: error

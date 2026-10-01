@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ScoringModel percentage / scaledScore / passed matches known score snapshots across a range of results 1`] = `
+[
+  {
+    "correct": 0,
+    "passed": false,
+    "percentage": 0,
+    "scaledScore": 0,
+  },
+  {
+    "correct": 15,
+    "passed": false,
+    "percentage": 23.076923076923077,
+    "scaledScore": 231,
+  },
+  {
+    "correct": 35,
+    "passed": false,
+    "percentage": 53.84615384615385,
+    "scaledScore": 538,
+  },
+  {
+    "correct": 50,
+    "passed": true,
+    "percentage": 76.92307692307693,
+    "scaledScore": 769,
+  },
+  {
+    "correct": 65,
+    "passed": true,
+    "percentage": 100,
+    "scaledScore": 1000,
+  },
+  {
+    "correct": 100,
+    "passed": true,
+    "percentage": 153.84615384615387,
+    "scaledScore": 1538,
+  },
+]
+`;

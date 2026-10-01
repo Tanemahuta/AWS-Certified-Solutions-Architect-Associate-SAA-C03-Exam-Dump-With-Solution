@@ -28,3 +28,20 @@ If you find this repository useful, please consider starring it. Your support he
 While this repository aims to assist you in your exam preparation, it is not a guarantee of success. The best way to prepare is to combine various resources, hands-on experience, and thorough understanding of AWS services.
 
 Good luck with your AWS SAA-C03 exam preparation!
+
+## Study App
+
+Practice the questions in your browser with the SAA-C03 study app: a single-page app shipped as one self-contained
+`index.html` file. There is nothing to install and no server is needed.
+
+1. Download `index.html` from the [latest release](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest) ([direct download](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest/download/index.html)).
+2. Open the file in a current browser.
+
+The app offers an infinite practice mode, a timed exam simulation and per-question reports.
+
+**Your data stays in your browser:** answer statistics and quiz sessions are stored only in the browser's local
+storage. Nothing is sent to a server. Use *Export statistics* / *Import statistics* in the reports to move your
+progress between browsers. Use *Clear browser data* to reset it.
+
+The sources, the question database tooling and the build are in [`study-app`](./study-app). See
+[study-app/README.md](./study-app/README.md).

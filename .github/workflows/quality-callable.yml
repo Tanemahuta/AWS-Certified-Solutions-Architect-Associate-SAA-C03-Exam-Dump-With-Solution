@@ -1,0 +1,48 @@
+name: dependency quality
+
+on:
+  workflow_call:
+
+concurrency:
+  group: quality-${{ github.repository_id }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+defaults:
+  run:
+    working-directory: study-app
+
+jobs:
+  vulnerabilities:
+    name: Dependency vulnerability scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-study-app
+      - name: Scan dependencies for known vulnerabilities
+        run: pnpm run audit
+
+  licenses:
+    name: Dependency licenses
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: ./.github/actions/setup-study-app
+      - name: Reject forbidden or unknown dependency licenses
+        run: pnpm run licenses
+      - name: Add license inventory to the job summary
+        run: |
+          {
+            echo '### Third-party license inventory'
+            echo
+            echo '```csv'
+            pnpm --silent run licenses --report 2>/dev/null
+            echo '```'
+          } >>"${GITHUB_STEP_SUMMARY}"

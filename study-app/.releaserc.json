@@ -1,0 +1,14 @@
+{
+  "branches": ["main"],
+  "tagFormat": "v${version}",
+  "plugins": [
+    ["@semantic-release/commit-analyzer", { "preset": "conventionalcommits" }],
+    ["@semantic-release/release-notes-generator", { "preset": "conventionalcommits" }],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [{ "path": "dist/index.html", "name": "index.html", "label": "SAA-C03 study app (index.html)" }]
+      }
+    ]
+  ]
+}

@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`AnswerStatistics.priority matches the priority snapshot across the full lifecycle of a question 1`] = `
+[
+  3,
+  3,
+  2,
+  1,
+]
+`;

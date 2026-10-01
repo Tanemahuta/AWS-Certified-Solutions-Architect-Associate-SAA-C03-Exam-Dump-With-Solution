@@ -1,0 +1,42 @@
+name: pull request gate
+
+# Branch pushes run checks only while no pull request is open for the branch; the pull request run covers them then.
+
+on:
+  workflow_call:
+    outputs:
+      run:
+        description: Whether the calling workflow should run its checks
+        value: ${{ jobs.gate.outputs.run }}
+
+permissions: {}
+
+jobs:
+  gate:
+    name: Check for open pull request
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    outputs:
+      run: ${{ steps.gate.outputs.run }}
+    steps:
+      - name: Skip branch push covered by an open pull request
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [[ "${EVENT_NAME}" != "push" ]]; then
+            echo "run=true" >>"${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          open_prs="$(gh pr list --repo "${REPOSITORY}" --head "${BRANCH}" --state open --json number --jq length)"
+          if [[ "${open_prs}" -gt 0 ]]; then
+            echo "Branch ${BRANCH} has an open pull request; its pull request run performs the checks."
+            echo "run=false" >>"${GITHUB_OUTPUT}"
+          else
+            echo "run=true" >>"${GITHUB_OUTPUT}"
+          fi
