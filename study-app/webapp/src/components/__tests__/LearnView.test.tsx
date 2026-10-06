@@ -25,11 +25,11 @@ const view = (path = "/learn", items = problems) => <MemoryRouter initialEntries
 
 it("reveals multiple correct answers and green explanations without submitting", () => {
   render(view());
-  expect(screen.getByText("Learn mode · Question 10 · 1 of 2")).toBeInTheDocument();
+  expect(screen.getByText("Learn mode · Question 10 of 2")).toBeInTheDocument();
   expect(screen.getByText("Correct").closest(".report-answer")).toHaveClass("correct");
   expect(screen.getByText("Also correct").closest(".report-answer")).toHaveClass("correct");
   expect(screen.getByText("Correct explanation").closest(".choice-explanation")).toHaveClass("explanation-correct");
-  expect(screen.queryByText("Wrong explanation")).not.toBeInTheDocument();
+  expect(screen.getByText("Wrong explanation")).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: /Submit/ })).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Previous question" })).toBeDisabled();
 });

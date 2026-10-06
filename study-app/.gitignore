@@ -2,3 +2,7 @@ node_modules/
 dist/
 
 coverage/
+
+# Rebuilt from the root PDF/solution text and hand-authored overrides.
+/webapp/data/problems.json
+/webapp/src/generated/

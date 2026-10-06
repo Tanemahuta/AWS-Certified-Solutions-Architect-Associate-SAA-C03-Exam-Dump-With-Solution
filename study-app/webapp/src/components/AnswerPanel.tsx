@@ -25,7 +25,7 @@ export function AnswerPanel({ controller }: AnswerPanelProps): JSX.Element {
     <div className="answer-panel">
       {multiple && !submitted && <p className="answer-hint">Select {required} answers ({selected.length} selected)</p>}
       {submitted && <p className={`feedback ${answerCorrect ? "success" : "error"}`}>{answerCorrect ? "Correct!" : "Incorrect."}</p>}
-      <ChoiceList choices={choices} selected={selected} revealed={submitted} onSelect={choice => controller.answer(choice)} />
+      <ChoiceList choices={choices} selected={selected} revealed={submitted} showAllExplanations={submitted && answerCorrect === false} onSelect={choice => controller.answer(choice)} />
     </div>
   );
 }

@@ -53,8 +53,8 @@ export function LearnView({ problems, questionHash, onBack }: LearnViewProps): J
   ]);
   if (problems.length > 0 && !problem) return <Navigate to="/learn" replace />;
   return <main className="app learn-swipe" onPointerDown={swipeStart} onPointerUp={swipeEnd} onPointerCancel={() => { swipe.current = undefined; }}><section className="card learn-card">
-    <header><button className="button button--secondary button--icon" onClick={onBack} aria-label="Home" title="Home"><span className="icon mdi mdi-home" aria-hidden="true" /></button><span>Learn mode · {problem && <>Question {problem.questionNumber} · </>}{problem ? index + 1 : 0} of {problems.length}</span></header>
-    {problem ? <><QuestionHeading problem={problem} /><ChoiceList choices={problem.choices} />
+    <header><button className="button button--secondary button--icon" onClick={onBack} aria-label="Home" title="Home"><span className="icon mdi mdi-home" aria-hidden="true" /></button><span>Learn mode · Question {problem?.questionNumber ?? 0} of {problems.length}</span></header>
+    {problem ? <><QuestionHeading problem={problem} /><ChoiceList choices={problem.choices} showAllExplanations />
       <nav className="actions learn-navigation" aria-label="Learning questions">
         <button className="button button--primary" onClick={() => goTo(index - 1)} disabled={index === 0}><span className="icon mdi mdi-arrow-left" aria-hidden="true" />Previous question</button>
         <button className="button button--secondary" onClick={() => setGoToOpen(true)}>Go to</button>

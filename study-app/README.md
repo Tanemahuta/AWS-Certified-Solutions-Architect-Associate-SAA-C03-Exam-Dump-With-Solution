@@ -18,6 +18,7 @@ All commands run from this folder:
 |-----------------------|-------------------------------------------------------------------------------------|
 | `pnpm install`        | Install dependencies                                                                |
 | `pnpm run create-db`  | Parse `../*.pdf` and `../*.txt` into `webapp/data/problems.json`                    |
+| `pnpm run generate`   | Rebuild the question database and compressed web app module                         |
 | `pnpm run build`      | `create-db`, then bundle the web app into a self-contained `dist/index.html`        |
 | `pnpm run dev`        | Start the Vite dev server                                                           |
 | `pnpm run lint`       | Run ESLint                                                                          |
@@ -26,6 +27,11 @@ All commands run from this folder:
 | `pnpm run verify`     | Lint, type-check and test                                                           |
 | `pnpm run audit`      | Scan dependencies for known vulnerabilities                                         |
 | `pnpm run licenses`   | Reject dependencies with forbidden or unknown licenses (`-- --report` for a CSV)    |
+
+The PDF and solution text in the repository root and `webapp/data/override.json` are the source inputs.
+The generated `webapp/data/problems.json`, `webapp/src/generated/`, build output, and coverage reports
+are ignored by Git. Build, development, typecheck, and test commands regenerate their question data
+automatically, including on a fresh checkout. Make persistent content corrections in `override.json`.
 
 The CLI runs directly from the TypeScript sources via `ts-node`:
 
