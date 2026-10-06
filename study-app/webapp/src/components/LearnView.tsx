@@ -26,12 +26,12 @@ export function LearnView({ problems, questionHash, onBack }: LearnViewProps): J
     { key: "ArrowRight", action: () => setIndex(index + 1), enabled: index < problems.length - 1 },
   ]);
   return <main className="app"><section className="card learn-card">
-    <header><button onClick={onBack}><Icon name="home" />Home</button><span>Learn mode · {problem ? index + 1 : 0} of {problems.length}</span></header>
+    <header><button className="button button--secondary button--icon" onClick={onBack} aria-label="Home" title="Home"><Icon name="home" /></button><span>Learn mode · {problem ? index + 1 : 0} of {problems.length}</span></header>
     {problem ? <><p className="question-number">Question {problem.questionNumber}</p><QuestionHeading problem={problem} /><ChoiceList choices={problem.choices} />
       <nav className="actions learn-navigation" aria-label="Learning questions">
-        <button onClick={() => setIndex(index - 1)} disabled={index === 0}><Icon name="previous" />Previous question</button>
+        <button className="button button--primary" onClick={() => setIndex(index - 1)} disabled={index === 0}><Icon name="previous" />Previous question</button>
         <label>Go to question<select aria-label="Go to question" value={index} onChange={event => setIndex(Number(event.target.value))}>{problems.map((item, position) => <option key={item.questionNumber} value={position}>Question {item.questionNumber}</option>)}</select></label>
-        <button onClick={() => setIndex(index + 1)} disabled={index === problems.length - 1}>Next question<Icon name="next" /></button>
+        <button className="button button--primary" onClick={() => setIndex(index + 1)} disabled={index === problems.length - 1}>Next question<Icon name="next" /></button>
       </nav></> : <p>No questions available.</p>}
   </section></main>;
 }

@@ -13,6 +13,6 @@ it("makes learning the first action and shows the available question count", asy
  it("wires the restored navigation buttons", async () => {
   const handlers = { onLearn: jest.fn(), onInfinite: jest.fn(), onTimed: jest.fn(), onReports: jest.fn(), onClearBrowserData: jest.fn() };
   render(<HomeView questionCount={42} {...handlers} />);
-  for (const name of ["Learn mode", "Test all questions", "Timed test", "Statistics", "Clear data"]) await userEvent.click(screen.getByRole("button", { name }));
+  for (const name of ["Learn mode", "Test all questions", "Timed test", "Statistics", "Clear all browser data"]) await userEvent.click(screen.getByRole("button", { name }));
   Object.values(handlers).forEach(handler => expect(handler).toHaveBeenCalledTimes(1));
 });

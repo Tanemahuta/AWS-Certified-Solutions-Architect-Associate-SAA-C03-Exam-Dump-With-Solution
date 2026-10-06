@@ -49,6 +49,7 @@ export function App(): JSX.Element {
   const [active, setActive] = useState<ActiveController>();
   const [timedController, setTimedController] = useState<TimedQuizController>();
   const [infiniteController, setInfiniteController] = useState<InfiniteQuizController>();
+  const [paused, setPaused] = useState(false);
   const [score, setScore] = useState(0);
   const [reportStats, setReportStats] = useState<AnswerStatisticsData>({});
   const [hydrated, setHydrated] = useState(false);
@@ -125,16 +126,17 @@ export function App(): JSX.Element {
   }, [questionDatabase, problems, domains, location.pathname]);
 
   useEffect(() => {
-    if (!active?.timed || modeFromPath(location.pathname) !== "timed") return;
+    if (paused || !active?.timed || modeFromPath(location.pathname) !== "timed") return;
     const controller = active.controller;
     const interval = window.setInterval(() => {
       controller.setRemainingSeconds(Math.max(0, controller.remainingSeconds - 1));
       refresh((value) => value + 1);
     }, 1000);
     return () => window.clearInterval(interval);
-  }, [active, location.pathname]);
+  }, [active, location.pathname, paused]);
 
   const start = (timed: boolean): void => {
+    setPaused(false);
     if (!store.current || !statistics.current) return;
     const mode = modePath(timed);
     const controller = timed
@@ -150,6 +152,7 @@ export function App(): JSX.Element {
   };
 
   const resume = (timed: boolean): void => {
+    setPaused(false);
     const saved = timed ? timedController : infiniteController;
     const mode = modePath(timed);
     active?.controller.pause();
@@ -231,8 +234,9 @@ export function App(): JSX.Element {
   };
 
   const pause = (): void => {
-    if (active?.timed) active.controller.pause();
-    navigate("/home", { replace: true });
+    if (!active?.timed) return;
+    active.controller.pause();
+    setPaused(value => !value);
   };
 
   useEffect(() => {
@@ -248,7 +252,7 @@ export function App(): JSX.Element {
   const quizRoute = (mode: QuizMode): JSX.Element => {
     const matchesActiveMode = active && active.timed === (mode === "timed");
     return matchesActiveMode
-      ? <QuizView controller={active.controller} timed={active.timed} onBack={goBack} onPause={active.timed ? pause : undefined} onRestart={restart} onNext={next} />
+      ? <QuizView controller={active.controller} timed={active.timed} onBack={goBack} paused={active.timed && paused} onPause={active.timed ? pause : undefined} onRestart={restart} onNext={next} />
       : <Navigate to="/home" replace />;
   };
 
