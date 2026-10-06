@@ -1,0 +1,100 @@
+name: publish
+
+on:
+  workflow_run:
+    workflows: [verify, release]
+    types: [completed]
+  delete:
+  workflow_dispatch:
+
+# All publications share one lock so root, previews, and cleanup preserve each other's files.
+concurrency:
+  group: pages-${{ github.repository_id }}
+  queue: max
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  source:
+    # Only publish successful repository branch/PR builds. Merge queue and fork builds remain check-only.
+    if: >-
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       contains(fromJSON('["push", "pull_request", "workflow_dispatch"]'), github.event.workflow_run.event)) ||
+      (github.event_name == 'delete' && github.event.ref_type == 'branch' && github.event.ref != 'gh-pages') ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      publishable: ${{ steps.source.outputs.publishable }}
+    steps:
+      - name: Skip successful verify runs whose PR gate skipped the build
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          REPOSITORY: ${{ github.repository }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          if [[ "${EVENT_NAME}" != workflow_run ]]; then
+            echo 'publishable=true' >>"${GITHUB_OUTPUT}"
+            exit 0
+          fi
+          artifacts="$(gh api "repos/${REPOSITORY}/actions/runs/${SOURCE_RUN_ID}/artifacts?per_page=100" --jq '[.artifacts[] | select(.name == "study-app" and .expired == false)] | length')"
+          if [[ "${artifacts}" -gt 0 ]]; then
+            echo 'publishable=true' >>"${GITHUB_OUTPUT}"
+          else
+            echo 'No completed build artifact; this run does not publish.'
+            echo 'publishable=false' >>"${GITHUB_OUTPUT}"
+          fi
+
+  build:
+    needs: [source]
+    if: needs.source.outputs.publishable == 'true'
+    uses: ./.github/workflows/build-callable.yml
+    with:
+      artifact-run-id: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.id || 0 }}
+    permissions:
+      contents: read
+      actions: read
+
+  publish:
+    name: Publish app and clean previews
+    needs: [build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page-url }}
+    env:
+      SOURCE_BRANCH: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_branch || github.ref_name }}
+    steps:
+      # Execute publishing code from the default branch, never from a PR artifact.
+      - name: Check out trusted publishing action
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+      - name: Download built web app
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: study-app
+          path: study-app/dist
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: study-app/package.json
+      - name: Publish app to root or branch subdirectory
+        id: publish
+        uses: ./.github/actions/publish-study-app
+        with:
+          branch: ${{ env.SOURCE_BRANCH }}
+          subdirectory: ${{ env.SOURCE_BRANCH != 'main' && env.SOURCE_BRANCH || '' }}
+          cleanup-only: ${{ github.event_name == 'delete' }}

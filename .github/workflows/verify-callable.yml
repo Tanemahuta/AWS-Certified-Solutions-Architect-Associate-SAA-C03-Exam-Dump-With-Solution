@@ -46,19 +46,11 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: ./.github/actions/setup-study-app
       - run: pnpm run test:coverage
+      - run: pnpm run test:deployment
+      - run: pnpm run test:security
 
   build:
-    name: Build web app
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    uses: ./.github/workflows/build-callable.yml
     permissions:
       contents: read
-    steps:
-      - uses: actions/checkout@v7.0.1
-      - uses: ./.github/actions/setup-study-app
-      - run: pnpm run build
-      - uses: actions/upload-artifact@v7.0.1
-        with:
-          name: study-app
-          path: study-app/dist/index.html
-          if-no-files-found: error
+      actions: read

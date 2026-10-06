@@ -49,5 +49,52 @@ On every push to `main`, the [release](../.github/workflows/release.yml) workflo
 [Conventional Commits](https://www.conventionalcommits.org/) (`fix:` → patch, `feat:` → minor,
 `feat!:`/`BREAKING CHANGE:` → major). It creates the `v<version>` GitHub release with the built `index.html` attached.
 
+The shared [build workflow](../.github/workflows/build-callable.yml) embeds the version calculated with
+semantic-release's configured commit analyzer. `main` uses the next release version, or the latest reachable
+release version when there are no release changes. Branch builds append `-preview.sha<short-commit>`.
+This calculation works with read-only credentials and does not create tags or releases.
+
+The [publish workflow](../.github/workflows/publish.yml) runs after successful verify or release workflows.
+It downloads that run's build before invoking the [publish action](../.github/actions/publish-study-app/action.yaml).
+The action supports a `subdirectory` input: `main` is published to `/index.html`, while a branch such as
+`feat/previews` is published to `/feat/previews/index.html`, relative to the GitHub Pages site root.
+Root publication preserves active branch previews. Branch deletion removes **all** orphan preview directories;
+the same cleanup also runs on every publication. Publication is queued to prevent concurrent changes from
+overwriting each other, and a stale build cannot replace a newer branch HEAD. The `gh-pages` branch stores
+the complete site and is excluded from source CI.
+
+The upper-right toolbar displays the embedded version and a branch dropdown. Its branch list is loaded from
+the site's root `branches.json`, including from nested previews. Active branches without a successful published
+build are shown as pending. Downloaded release HTML remains self-contained and does not need the branch list.
+Repository branches and their PRs publish previews, including Dependabot branches; fork PRs and merge queue
+runs remain check-only. CodeQL and dependency quality do not publish duplicate previews.
+
+Enable GitHub Pages with **Settings → Pages → Build and deployment → Source → GitHub Actions** before the
+first publication. The publishing workflow and action must be merged into the default branch for
+[`workflow_run` and deletion events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
+to use them. A manual publish run rebuilds and publishes the selected branch; use `main` for the root page.
+
+`pnpm run test:deployment` checks version calculation and publication/cleanup using temporary repositories
+and directories. CI runs these tests alongside the existing Jest suite.
+
+## Dependency security
+
+`pnpm run audit` audits all dependencies without advisory exceptions. The workspace
+overrides `source-map-js` to 1.2.2 for [GHSA-68fv-2mgg-jv7q](https://github.com/advisories/GHSA-68fv-2mgg-jv7q).
+NYC's YAML loader uses js-yaml 4.3.2, removing the argparse 1 / sprintf-js chain affected by
+[GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c).
+
+For [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm), `braces` is replaced with the
+API-compatible [`@dieub/braces-depth-guard`](https://github.com/dieub/braces-depth-guard) fork, pinned to
+3.0.3-pn.0. Its runtime changes backport the nesting guards from upstream micromatch/braces#72 and preserve
+the original MIT license. No local patches or audit suppressions are needed.
+`pnpm run test:security` checks depth rejection and ordinary glob behavior through all direct consumers,
+plus the NYC YAML replacement. CI runs these alongside the existing tests.
+
 Dependabot pull requests (patch/minor, and major for direct development dependencies) and pull requests by the
 repository owner are approved and auto-merged by the [pull request automation](../.github/workflows/pr.yaml).
+That same workflow opens missing pull requests for all repository source branches on branch pushes,
+hourly, and when manually dispatched. It skips the default branch, `gh-pages`, branches with any open PR
+(including drafts), and branches with no commits ahead of the default branch. Closed unmerged PRs do not
+prevent a new PR from being opened. The existing `AUTO_RELEASE_TOKEN` must have contents read and pull
+requests write permissions; using it allows PR checks and approval automation to run without an approval prompt.

@@ -15,6 +15,8 @@
     "typecheck": "tsc -p tsconfig.json && tsc -p webapp/tsconfig.json",
     "test": "jest",
     "test:coverage": "jest --coverage",
+    "test:deployment": "node --test scripts/build-version.test.mjs ../.github/actions/publish-study-app/prepare-site.test.mjs",
+    "test:security": "node --test scripts/dependency-security.test.mjs",
     "verify": "npm run lint && npm run typecheck && npm run test",
     "release": "semantic-release",
     "licenses": "node scripts/check-licenses.mjs",
