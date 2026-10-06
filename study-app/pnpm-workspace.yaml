@@ -1,3 +1,17 @@
 allowBuilds:
   '@parcel/watcher': true
   unrs-resolver: true
+
+overrides:
+  source-map-js: 1.2.2
+  # NYC uses yaml.load; v4 removes the vulnerable argparse 1 / sprintf-js chain.
+  '@istanbuljs/load-nyc-config>js-yaml': 4.3.2
+
+patchedDependencies:
+  braces@3.0.3: patches/braces@3.0.3.patch
+
+# Registry auditing cannot recognize our local patch. The audit script first
+# verifies its guards; remove this exception and the patch once upstream fixes it.
+audit:
+  ignore:
+    - GHSA-vfj7-8cjw-p6xm

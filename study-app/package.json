@@ -19,7 +19,7 @@
     "verify": "npm run lint && npm run typecheck && npm run test",
     "release": "semantic-release",
     "licenses": "node scripts/check-licenses.mjs",
-    "audit": "pnpm audit --audit-level=moderate"
+    "audit": "node --test scripts/dependency-security.test.mjs && pnpm audit --audit-level=moderate"
   },
   "dependencies": {
     "commander": "^14.0.0",

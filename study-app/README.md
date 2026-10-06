@@ -77,5 +77,19 @@ to use them. A manual publish run rebuilds and publishes the selected branch; us
 `pnpm run test:deployment` checks version calculation and publication/cleanup using temporary repositories
 and directories. CI runs these tests alongside the existing Jest suite.
 
+## Dependency security patches
+
+`pnpm run audit` tests the installed dependency mitigations before running the registry audit. The workspace
+overrides `source-map-js` to 1.2.2 for [GHSA-68fv-2mgg-jv7q](https://github.com/advisories/GHSA-68fv-2mgg-jv7q).
+NYC's YAML loader uses js-yaml 4.3.2, removing the argparse 1 / sprintf-js chain affected by
+[GHSA-hp3w-g68c-fv3c](https://github.com/advisories/GHSA-hp3w-g68c-fv3c).
+
+[GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) has no upstream braces fix.
+The committed pnpm patch rejects nesting deeper than 128 levels before parsing or recursively walking an
+AST. It also checks caller-supplied ASTs and cycles for compile, expand, and stringify. Regression tests exercise
+the patched dependency through each direct consumer and verify ordinary expansion and matching.
+Only this locally mitigated advisory is exempted from the registry audit, which cannot inspect patches;
+the exemption is guarded by these tests. Remove both the patch and exemption when upstream publishes a fix.
+
 Dependabot pull requests (patch/minor, and major for direct development dependencies) and pull requests by the
 repository owner are approved and auto-merged by the [pull request automation](../.github/workflows/pr.yaml).
