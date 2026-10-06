@@ -3,7 +3,7 @@
     {
       "name": "main",
       "path": "",
-      "published": false
+      "published": true
     },
     {
       "name": "feat/web-app",
