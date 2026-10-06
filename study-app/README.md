@@ -70,6 +70,10 @@ the site's root `branches.json`, including from nested previews. Active branches
 build are shown as pending. Downloaded release HTML remains self-contained and does not need the branch list.
 Repository branches and their PRs publish previews, including Dependabot branches; fork PRs and merge queue
 runs remain check-only. CodeQL and dependency quality do not publish duplicate previews.
+The rounded selector box is a translucent overlay that becomes opaque on hover or keyboard focus.
+Open [`webapp/deployment-overlay.html`](webapp/deployment-overlay.html) directly in a browser to preview it.
+The Vite builder and root placeholder extract the marked overlay fragment from that same HTML file;
+the surrounding preview content is not included in the published app.
 
 Enable GitHub Pages with **Settings → Pages → Build and deployment → Source → GitHub Actions** before the
 first publication. The publishing workflow and action must be merged into the default branch for
