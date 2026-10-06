@@ -6,11 +6,6 @@
       "published": true
     },
     {
-      "name": "feat/web-app",
-      "path": "feat/web-app/",
-      "published": false
-    },
-    {
       "name": "fix/questions",
       "path": "fix/questions/",
       "published": true
