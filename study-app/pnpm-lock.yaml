@@ -163,11 +163,9 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  braces: npm:@dieub/braces-depth-guard@3.0.3-pn.0
   source-map-js: 1.2.2
   '@istanbuljs/load-nyc-config>js-yaml': 4.3.2
-
-patchedDependencies:
-  braces@3.0.3: 6a9e1e0f3593668439dbcbbd37fb8297225aec1a6e631924d8ec3c4b7af272b6
 
 importers:
 
@@ -517,6 +515,10 @@ packages:
   '@csstools/css-tokenizer@3.0.4':
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
     engines: {node: '>=18'}
+
+  '@dieub/braces-depth-guard@3.0.3-pn.0':
+    resolution: {integrity: sha512-2d7F2tzyJQMbFhXcA274fgBz5T3uByP5AWlkjnEqXGDpBHCcw7GjuW2mFgXF04yQ3QeCpLXJ9XstRSHHjS4/5w==}
+    engines: {node: '>=8'}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -1491,10 +1493,6 @@ packages:
   brace-expansion@5.0.12:
     resolution: {integrity: sha512-YovQ3rzhaLMIrDjNDMkNS01tea93qhEhG5xy8f6+R0l+dw3Ki+5sCoIoI942iuLZTHWogWktgwVDhU09iNEimQ==}
     engines: {node: 20 || >=22}
-
-  braces@3.0.3:
-    resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
-    engines: {node: '>=8'}
 
   browserslist@4.29.2:
     resolution: {integrity: sha512-/u9r8k8ue4ZhHCw9ovDtltpWdXeXzjhdxCGj6vm1RGLPXb8lu33EMdoCHF5Sx8oYBS+Q/FYYNmAqlHncxR3RmA==}
@@ -3916,6 +3914,10 @@ snapshots:
 
   '@csstools/css-tokenizer@3.0.4': {}
 
+  '@dieub/braces-depth-guard@3.0.3-pn.0':
+    dependencies:
+      fill-range: 7.1.1
+
   '@emnapi/core@1.10.0':
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
@@ -4945,10 +4947,6 @@ snapshots:
   brace-expansion@5.0.12:
     dependencies:
       balanced-match: 4.0.4
-
-  braces@3.0.3(patch_hash=6a9e1e0f3593668439dbcbbd37fb8297225aec1a6e631924d8ec3c4b7af272b6):
-    dependencies:
-      fill-range: 7.1.1
 
   browserslist@4.29.2:
     dependencies:
@@ -6194,7 +6192,7 @@ snapshots:
 
   micromatch@4.0.8:
     dependencies:
-      braces: 3.0.3(patch_hash=6a9e1e0f3593668439dbcbbd37fb8297225aec1a6e631924d8ec3c4b7af272b6)
+      braces: '@dieub/braces-depth-guard@3.0.3-pn.0'
       picomatch: 2.3.2
 
   mime@4.1.0: {}

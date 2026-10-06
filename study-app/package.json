@@ -16,10 +16,11 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:deployment": "node --test scripts/build-version.test.mjs ../.github/actions/publish-study-app/prepare-site.test.mjs",
+    "test:security": "node --test scripts/dependency-security.test.mjs",
     "verify": "npm run lint && npm run typecheck && npm run test",
     "release": "semantic-release",
     "licenses": "node scripts/check-licenses.mjs",
-    "audit": "node --test scripts/dependency-security.test.mjs && pnpm audit --audit-level=moderate"
+    "audit": "pnpm audit --audit-level=moderate"
   },
   "dependencies": {
     "commander": "^14.0.0",

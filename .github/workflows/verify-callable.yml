@@ -47,6 +47,7 @@ jobs:
       - uses: ./.github/actions/setup-study-app
       - run: pnpm run test:coverage
       - run: pnpm run test:deployment
+      - run: pnpm run test:security
 
   build:
     uses: ./.github/workflows/build-callable.yml

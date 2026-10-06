@@ -9,14 +9,14 @@ for (const consumer of consumers) {
   const consumerRequire = createRequire(require.resolve(consumer));
   const braces = createRequire(consumerRequire.resolve("micromatch"))("braces");
 
-  test(`${consumer}: patched braces rejects deep patterns and caller-supplied ASTs`, () => {
+  test(`${consumer}: replacement braces rejects deep patterns and caller-supplied ASTs`, () => {
     // Stay below the original 10,000-character cap: this exercises the new depth guard.
     const deep = "{".repeat(4000) + "a,b" + "}".repeat(4000);
     const unmatched = "{".repeat(4000) + "a";
     const parentheses = "(".repeat(4000) + "a" + ")".repeat(4000);
     for (const pattern of [deep, unmatched, parentheses]) {
       for (const operation of [braces.parse, braces.compile, braces.expand, braces.stringify]) {
-        assert.throws(() => operation(pattern), /braces maximum nesting depth exceeded/);
+        assert.throws(() => operation(pattern), /exceeds max depth/);
       }
     }
     let ast = { type: "text", value: "a" };
@@ -24,7 +24,7 @@ for (const consumer of consumers) {
     const cycle = { type: "root", nodes: [] };
     cycle.nodes.push(cycle);
     for (const operation of [braces.compile, braces.expand, braces.stringify]) {
-      for (const input of [ast, cycle]) assert.throws(() => operation(input), /braces maximum nesting depth exceeded/);
+      for (const input of [ast, cycle]) assert.throws(() => operation(input), /exceeds max depth/);
     }
   });
 
