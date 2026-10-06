@@ -23,6 +23,7 @@
     "audit": "pnpm audit --audit-level=moderate"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "commander": "^14.0.0",
     "levenshtein": "^1.0.5",
     "pdf-parse": "^1.1.1",

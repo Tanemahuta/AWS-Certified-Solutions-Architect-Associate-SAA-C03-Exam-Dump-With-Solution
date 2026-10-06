@@ -15,7 +15,7 @@ import { ScoringModel } from "./services/ScoringModel";
 import { TimedQuestionSelector } from "./services/TimedQuestionSelector";
 import { InfiniteQuestionSelector } from "./services/InfiniteQuestionSelector";
 import { RandomizingQuestionSelector } from "./services/RandomizingQuestionSelector";
-import { LearnView, LEARN_SESSION_KEY } from "./components/LearnView";
+import { LearnEntry, LearnView, LEARN_SESSION_KEY } from "./components/LearnView";
 import { HomeView } from "./components/HomeView";
 import { QuizView } from "./components/QuizView";
 import { ReportView } from "./components/ReportView";
@@ -280,7 +280,8 @@ export function App(): JSX.Element {
   return <Routes>
     <Route path="/" element={<Navigate to="/home" replace />} />
     <Route path="/home" element={<HomeView questionCount={problems.length} onLearn={() => openView("/learn")} onInfinite={() => resume(false)} onTimed={() => resume(true)} onReports={() => openView("/reports")} onClearBrowserData={clearBrowserData} />} />
-    <Route path="/learn" element={<LearnView problems={problems} questionHash={questionDatabase.hash} onBack={goBack} />} />
+    <Route path="/learn" element={<LearnEntry problems={problems} questionHash={questionDatabase.hash} onBack={goBack} />} />
+    <Route path="/learn/:questionNumber" element={<LearnView problems={problems} questionHash={questionDatabase.hash} onBack={goBack} />} />
     <Route path="/infinite/:questionNumber?" element={quizRoute("infinite")} />
     <Route path="/timed/:questionNumber?" element={quizRoute("timed")} />
     <Route path="/results" element={resultsRoute()} />
