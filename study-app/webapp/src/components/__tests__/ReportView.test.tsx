@@ -7,7 +7,7 @@ import { ReportView } from "../ReportView";
 import type { ReportSort } from "../reportRows";
 
 const problems = [
-  mockProblem({ questionNumber: 1, question: "Secure question" }),
+  mockProblem({ questionNumber: 1, question: "<p>Secure<br/>question</p>" }),
   mockProblem({ questionNumber: 2, question: "Resilient question" }),
 ];
 const domains = ["Security", "Resilience"];

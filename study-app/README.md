@@ -1,13 +1,13 @@
 # Study App
 
-A TypeScript CLI that extracts questions and choices from the PDF in the repository root, matches the correct answer
-and explanation from the solution text, and a single-file React web app to study the resulting question database.
+A single-file React web app for studying a curated SAA-C03 question bank. The builder recalculates
+the database's content hash and embeds the complete database into the app.
 
 [Open the hosted study app on GitHub Pages](https://tanemahuta.github.io/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/),
 with a version selector for main and published branch previews.
 
-Download the ready-to-use app as `index.html` from the [latest release](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest)
-([direct download](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest/download/index.html)) and open it in a browser. Answer statistics and quiz sessions are
+Download the ready-to-use app as `index.html` from the [latest release](https://github.com/Tanemahuta/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest)
+([direct download](https://github.com/Tanemahuta/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest/download/index.html)) and open it in a browser. Answer statistics and quiz sessions are
 stored only in the browser's local storage. Nothing leaves your machine.
 
 ## Development
@@ -17,29 +17,30 @@ All commands run from this folder:
 | Command               | Description                                                                         |
 |-----------------------|-------------------------------------------------------------------------------------|
 | `pnpm install`        | Install dependencies                                                                |
-| `pnpm run create-db`  | Parse `../*.pdf` and `../*.txt` into `webapp/data/problems.json`                    |
-| `pnpm run generate`   | Rebuild the question database and compressed web app module                         |
-| `pnpm run build`      | `create-db`, then bundle the web app into a self-contained `dist/index.html`        |
+| `pnpm run generate`   | Refresh the database hash and generate the embedded module                         |
+| `pnpm run build`      | Refresh the database hash, then bundle a self-contained `dist/index.html`        |
 | `pnpm run dev`        | Start the Vite dev server                                                           |
 | `pnpm run lint`       | Run ESLint                                                                          |
-| `pnpm run typecheck`  | Type-check the CLI and the web app                                                  |
-| `pnpm test`           | Run the Jest tests (`cli` in node, `webapp` in jsdom with React Testing Library)    |
+| `pnpm run typecheck`  | Type-check the web app                                                  |
+| `pnpm test`           | Run JSON builder/content checks and web app tests with React Testing Library    |
 | `pnpm run verify`     | Lint, type-check and test                                                           |
 | `pnpm run audit`      | Scan dependencies for known vulnerabilities                                         |
 | `pnpm run licenses`   | Reject dependencies with forbidden or unknown licenses (`-- --report` for a CSV)    |
 
-The PDF and solution text in the repository root and `webapp/data/override.json` are the source inputs.
-The generated `webapp/data/problems.json`, `webapp/src/generated/`, build output, and coverage reports
-are ignored by Git. Build, development, typecheck, and test commands regenerate their question data
-automatically, including on a fresh checkout. Make persistent content corrections in `override.json`.
+`webapp/data/database.json` is the sole tracked, authoritative question bank. Edit its questions,
+answers, explanations, paragraph formatting, and language-labelled code blocks directly.
+Before bundling, the builder recomputes SHA-512 from its question data (excluding the hash field itself),
+updates the stored hash, and compresses the complete database into the single-page app.
+Stored hashes are never trusted or reused; you may leave the hash blank when editing.
 
-The CLI runs directly from the TypeScript sources via `ts-node`:
-
-```sh
-pnpm run cli -- list
-pnpm run cli -- show 1
-pnpm run cli -- create-db --pdf questions.pdf --solutions solutions.txt --output webapp/data/problems.json
-```
+Only `webapp/src/generated/`, build output, and coverage reports are ignored by Git.
+Build, development, typecheck, and test commands regenerate the embedded module automatically on a fresh checkout.
+Keep multiline code inside `<code>` markers.
+The renderer supports `<p>`, `<br/>`, and `<code>` while displaying other HTML as inert text.
+Code blocks use the bundled Highlight.js dependency and theme. Set a language explicitly with
+`<code class="language-json">` (also supported: YAML, JavaScript, Bash, SQL, and plaintext).
+Unlabelled blocks use automatic detection; unsupported explicit languages use plaintext.
+Highlighting preserves code and newlines, and requires no external scripts or stylesheets.
 
 ## CI and releases
 

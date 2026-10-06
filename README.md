@@ -5,7 +5,7 @@ Welcome to the AWS SAA-C03 Exam Preparation Repository! This repository is desig
 
 ## Contents
 
-- **650+ MCQs:** This repository includes a diverse set of over 650 multiple-choice questions covering various aspects of the AWS SAA-C03 exam.
+- **684 MCQs:** This repository includes 684 multiple-choice questions covering various aspects of the AWS SAA-C03 exam.
 
 - **Detailed Solutions:** Each question is accompanied by a detailed solution, providing explanations and insights to help you understand the concepts thoroughly.
 
@@ -37,14 +37,16 @@ Practice the questions in your browser with the SAA-C03 study app: a single-page
 [Open the study app on GitHub Pages](https://tanemahuta.github.io/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/).
 Use the version selector in the upper-right corner to switch between main and published branch previews.
 
-1. Download `index.html` from the [latest release](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest) ([direct download](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest/download/index.html)).
+1. Download `index.html` from the [latest release](https://github.com/Tanemahuta/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest) ([direct download](https://github.com/Tanemahuta/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest/download/index.html)).
 2. Open the file in a current browser.
 
-The app offers an infinite practice mode, a timed exam simulation and per-question reports.
+The app offers Learn mode, Test all questions, a timed exam simulation, and per-question statistics.
+Edit the authoritative question bank directly in `study-app/webapp/data/database.json`.
+The build recomputes its content hash before embedding it into the app.
 
 **Your data stays in your browser:** answer statistics and quiz sessions are stored only in the browser's local
-storage. Nothing is sent to a server. Use *Export statistics* / *Import statistics* in the reports to move your
-progress between browsers. Use *Clear browser data* to reset it.
+storage. Nothing is sent to a server. Use *Export* / *Import* in the reports to move your
+progress between browsers. Use *Clear all browser data* to reset it.
 
 The sources, the question database tooling and the build are in [`study-app`](./study-app). See
 [study-app/README.md](./study-app/README.md).

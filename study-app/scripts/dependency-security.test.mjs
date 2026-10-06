@@ -29,7 +29,7 @@ for (const consumer of consumers) {
   });
 
   test(`${consumer}: normal brace patterns and glob matching retain their behavior`, () => {
-    assert.deepEqual(braces.expand("src/{parser,model}/{a,b}.ts"), ["src/parser/a.ts", "src/parser/b.ts", "src/model/a.ts", "src/model/b.ts"]);
+    assert.deepEqual(braces.expand("webapp/{components,model}/{a,b}.ts"), ["webapp/components/a.ts", "webapp/components/b.ts", "webapp/model/a.ts", "webapp/model/b.ts"]);
     assert.equal(braces.compile("{main,next}"), "(main|next)");
     const micromatch = consumerRequire("micromatch");
     assert.deepEqual(micromatch(["main", "next", "other"], "{main,next}"), ["main", "next"]);
