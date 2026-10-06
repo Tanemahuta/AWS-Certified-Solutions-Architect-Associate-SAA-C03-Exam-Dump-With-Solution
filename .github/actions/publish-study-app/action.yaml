@@ -1,0 +1,68 @@
+name: publish-study-app
+description: Publish a built single-file app to a subdirectory and remove previews for deleted branches
+
+inputs:
+  build-directory:
+    description: Directory containing the built index.html and build.json
+    default: study-app/dist
+  branch:
+    description: Source branch (main publishes at the root)
+    required: true
+  subdirectory:
+    description: Preview subdirectory, normally the source branch name; empty for main
+    default: ''
+  cleanup-only:
+    description: Remove orphan previews without replacing any app
+    default: 'false'
+
+outputs:
+  page-url:
+    description: Published GitHub Pages URL
+    value: ${{ steps.deploy.outputs.page_url }}
+
+runs:
+  using: composite
+  steps:
+    - name: Configure GitHub Pages
+      id: pages
+      uses: actions/configure-pages@v6.0.0
+    - name: Load published site and active branches
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REPOSITORY: ${{ github.repository }}
+      run: |
+        mkdir -p "${RUNNER_TEMP}/previous-site" "${RUNNER_TEMP}/published-site"
+        gh auth setup-git
+        if git ls-remote --exit-code --heads origin gh-pages >"${RUNNER_TEMP}/pages-ref"; then
+          git fetch --no-tags origin refs/heads/gh-pages
+          git archive FETCH_HEAD | tar -x -C "${RUNNER_TEMP}/previous-site"
+        else
+          status=$?
+          if [[ "${status}" != 2 ]]; then exit "${status}"; fi
+        fi
+        gh api --paginate --slurp "repos/${REPOSITORY}/branches?per_page=100" >"${RUNNER_TEMP}/active-branches.json"
+    - name: Prepare app subdirectory and remove all orphan previews
+      shell: bash
+      env:
+        BUILD_DIRECTORY: ${{ inputs.build-directory }}
+        PUBLISH_BRANCH: ${{ inputs.branch }}
+        PUBLISH_SUBDIRECTORY: ${{ inputs.subdirectory }}
+        CLEANUP_ONLY: ${{ inputs.cleanup-only }}
+        SITE_URL: ${{ steps.pages.outputs.base_url }}
+      run: node .github/actions/publish-study-app/prepare-site.mjs
+    - name: Save the complete site on gh-pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ github.token }}
+        publish_branch: gh-pages
+        publish_dir: ${{ runner.temp }}/published-site
+        keep_files: false
+        full_commit_message: 'chore(pages): publish app and reconcile branch previews'
+    - name: Upload complete GitHub Pages site
+      uses: actions/upload-pages-artifact@v5.0.0
+      with:
+        path: ${{ runner.temp }}/published-site
+    - name: Publish GitHub Pages
+      id: deploy
+      uses: actions/deploy-pages@v5.0.1

@@ -49,5 +49,33 @@ On every push to `main`, the [release](../.github/workflows/release.yml) workflo
 [Conventional Commits](https://www.conventionalcommits.org/) (`fix:` → patch, `feat:` → minor,
 `feat!:`/`BREAKING CHANGE:` → major). It creates the `v<version>` GitHub release with the built `index.html` attached.
 
+The shared [build workflow](../.github/workflows/build-callable.yml) embeds the version calculated with
+semantic-release's configured commit analyzer. `main` uses the next release version, or the latest reachable
+release version when there are no release changes. Branch builds append `-preview.sha<short-commit>`.
+This calculation works with read-only credentials and does not create tags or releases.
+
+The [publish workflow](../.github/workflows/publish.yml) runs after successful verify or release workflows.
+It downloads that run's build before invoking the [publish action](../.github/actions/publish-study-app/action.yaml).
+The action supports a `subdirectory` input: `main` is published to `/index.html`, while a branch such as
+`feat/previews` is published to `/feat/previews/index.html`, relative to the GitHub Pages site root.
+Root publication preserves active branch previews. Branch deletion removes **all** orphan preview directories;
+the same cleanup also runs on every publication. Publication is queued to prevent concurrent changes from
+overwriting each other, and a stale build cannot replace a newer branch HEAD. The `gh-pages` branch stores
+the complete site and is excluded from source CI.
+
+The upper-right toolbar displays the embedded version and a branch dropdown. Its branch list is loaded from
+the site's root `branches.json`, including from nested previews. Active branches without a successful published
+build are shown as pending. Downloaded release HTML remains self-contained and does not need the branch list.
+Repository branches and their PRs publish previews, including Dependabot branches; fork PRs and merge queue
+runs remain check-only. CodeQL and dependency quality do not publish duplicate previews.
+
+Enable GitHub Pages with **Settings → Pages → Build and deployment → Source → GitHub Actions** before the
+first publication. The publishing workflow and action must be merged into the default branch for
+[`workflow_run` and deletion events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
+to use them. A manual publish run rebuilds and publishes the selected branch; use `main` for the root page.
+
+`pnpm run test:deployment` checks version calculation and publication/cleanup using temporary repositories
+and directories. CI runs these tests alongside the existing Jest suite.
+
 Dependabot pull requests (patch/minor, and major for direct development dependencies) and pull requests by the
 repository owner are approved and auto-merged by the [pull request automation](../.github/workflows/pr.yaml).

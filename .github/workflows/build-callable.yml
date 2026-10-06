@@ -1,0 +1,62 @@
+name: build
+
+on:
+  workflow_call:
+    inputs:
+      artifact-run-id:
+        description: Download an already built artifact from this workflow run instead of rebuilding
+        type: number
+        default: 0
+
+permissions: {}
+
+jobs:
+  build:
+    name: Build versioned web app
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    defaults:
+      run:
+        working-directory: study-app
+    steps:
+      - uses: actions/checkout@v7.0.1
+        if: inputs.artifact-run-id == 0
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+      - uses: ./.github/actions/setup-study-app
+        if: inputs.artifact-run-id == 0
+      - name: Calculate semantic-release version
+        if: inputs.artifact-run-id == 0
+        env:
+          APP_BRANCH: ${{ github.head_ref || github.ref_name }}
+          APP_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BUILD_METADATA_PATH: ${{ runner.temp }}/study-app-build.json
+        run: node scripts/build-version.mjs
+      - name: Build web app
+        if: inputs.artifact-run-id == 0
+        run: pnpm run build
+      - name: Include build metadata
+        if: inputs.artifact-run-id == 0
+        env:
+          BUILD_METADATA_PATH: ${{ runner.temp }}/study-app-build.json
+        run: cp "${BUILD_METADATA_PATH}" dist/build.json
+      - name: Download completed build
+        if: inputs.artifact-run-id != 0
+        uses: actions/download-artifact@v8.0.1
+        with:
+          name: study-app
+          path: study-app/dist
+          run-id: ${{ inputs.artifact-run-id }}
+          github-token: ${{ github.token }}
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: study-app
+          path: |
+            study-app/dist/index.html
+            study-app/dist/build.json
+          if-no-files-found: error

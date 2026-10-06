@@ -5,12 +5,16 @@
   --body-font-size: max(1rem, 1.8vmin);
   --supporting-font-size: max(.875rem, 1.45vmin);
   --question-font-size: max(1.125rem, 2.25vmin);
+  --deployment-toolbar-height: 2.75rem;
 }
 html { min-height: 100%; }
 body { margin: 0; min-height: 100vh; min-height: 100dvh; font-family: system-ui, sans-serif; font-size: var(--body-font-size); line-height: 1.35; background: #f1f5f9; color: #172033; }
-.app { width: min(100%, 72rem); min-height: 100vh; min-height: 100dvh; margin: 0 auto; padding: var(--page-padding); display: grid; }
-.card { min-height: calc(100vh - var(--page-padding) * 2); min-height: calc(100dvh - var(--page-padding) * 2); background: white; border-radius: 1rem; padding: var(--card-padding); box-shadow: 0 8px 24px #1720331a; display: flex; flex-direction: column; overflow: auto; }
-.quiz-card { height: calc(100vh - var(--page-padding) * 2); height: calc(100dvh - var(--page-padding) * 2); min-height: 0; overflow: hidden; }
+.app { width: min(100%, 72rem); min-height: 100vh; min-height: 100dvh; margin: 0 auto; padding: calc(var(--page-padding) + var(--deployment-toolbar-height)) var(--page-padding) var(--page-padding); display: grid; }
+.card { min-height: calc(100vh - var(--page-padding) * 2 - var(--deployment-toolbar-height)); min-height: calc(100dvh - var(--page-padding) * 2 - var(--deployment-toolbar-height)); background: white; border-radius: 1rem; padding: var(--card-padding); box-shadow: 0 8px 24px #1720331a; display: flex; flex-direction: column; overflow: auto; }
+.quiz-card { height: calc(100vh - var(--page-padding) * 2 - var(--deployment-toolbar-height)); height: calc(100dvh - var(--page-padding) * 2 - var(--deployment-toolbar-height)); min-height: 0; overflow: hidden; }
+.deployment-toolbar { position: fixed; top: 0; right: 0; z-index: 10; display: flex; align-items: center; gap: .5rem; height: var(--deployment-toolbar-height); max-width: 100%; padding: .4rem var(--page-padding); background: #f1f5f9; font-size: .8rem; }
+.deployment-toolbar span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.deployment-toolbar select { min-width: 0; max-width: min(45vw, 20rem); padding: .25rem; border: 1px solid #94a3b8; border-radius: .35rem; font: inherit; color: inherit; background: white; }
 header, .actions { display: flex; justify-content: space-between; gap: max(.5rem, 1.5vmin); align-items: center; }
 .quiz-header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; }
 header, .actions { flex: 0 0 auto; }

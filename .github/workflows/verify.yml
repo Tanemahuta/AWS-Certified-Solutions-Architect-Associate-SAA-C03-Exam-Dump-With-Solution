@@ -2,7 +2,7 @@ name: verify
 
 on:
   push:
-    branches-ignore: [main]
+    branches-ignore: [main, gh-pages]
   pull_request:
   merge_group:
     types: [checks_requested]
@@ -22,3 +22,4 @@ jobs:
     uses: ./.github/workflows/verify-callable.yml
     permissions:
       contents: read
+      actions: read
