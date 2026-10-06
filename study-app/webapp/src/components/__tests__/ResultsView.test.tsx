@@ -25,7 +25,12 @@ describe("ResultsView", () => {
   it("navigates back to the menu", async () => {
     const onBack = jest.fn();
     renderResults(800, [], onBack);
-    await userEvent.click(screen.getByRole("button", { name: "Back to menu" }));
+    await userEvent.click(screen.getByRole("button", { name: "Home" }));
     expect(onBack).toHaveBeenCalled();
   });
+});
+
+it("labels review links with original question numbers while preserving report routes", () => {
+  render(<MemoryRouter><ResultsView score={0} total={2} scaledScore={100} maximumScore={1000} passingScore={720} unscoredCount={0} wrongQuestions={[1]} questionNumbers={[10, 30]} onBack={jest.fn()} /></MemoryRouter>);
+  expect(screen.getByRole("link", { name: "Question 30" })).toHaveAttribute("href", "/reports/2");
 });

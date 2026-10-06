@@ -15,6 +15,8 @@ import { ScoringModel } from "./services/ScoringModel";
 import { TimedQuestionSelector } from "./services/TimedQuestionSelector";
 import { InfiniteQuestionSelector } from "./services/InfiniteQuestionSelector";
 import { RandomizingQuestionSelector } from "./services/RandomizingQuestionSelector";
+import { AppMenu } from "./components/AppMenu";
+import { LearnView, LEARN_SESSION_KEY } from "./components/LearnView";
 import { HomeView } from "./components/HomeView";
 import { QuizView } from "./components/QuizView";
 import { ReportView } from "./components/ReportView";
@@ -151,6 +153,7 @@ export function App(): JSX.Element {
   const resume = (timed: boolean): void => {
     const saved = timed ? timedController : infiniteController;
     const mode = modePath(timed);
+    active?.controller.pause();
     if (!saved) {
       start(timed);
       return;
@@ -192,6 +195,7 @@ export function App(): JSX.Element {
     store.current?.clear(TIMED_SESSION_KEY);
     store.current?.clear(INFINITE_SESSION_KEY);
     store.current?.clear(STATISTICS_SESSION_KEY);
+    store.current?.clear(LEARN_SESSION_KEY);
     setActive(undefined);
     setTimedController(undefined);
     setInfiniteController(undefined);
@@ -245,7 +249,7 @@ export function App(): JSX.Element {
   const quizRoute = (mode: QuizMode): JSX.Element => {
     const matchesActiveMode = active && active.timed === (mode === "timed");
     return matchesActiveMode
-      ? <QuizView controller={active.controller} timed={active.timed} onBack={goBack} onPause={active.timed ? pause : undefined} onRestart={restart} onNext={next} />
+      ? <QuizView controller={active.controller} timed={active.timed} onBack={goBack} onNext={next} />
       : <Navigate to="/home" replace />;
   };
 
@@ -257,7 +261,7 @@ export function App(): JSX.Element {
     const scaledScore = timed ? (controller as TimedQuizController).scaledScore : scoring.scaledScore(score, total);
     const unscoredCount = timed ? (controller as TimedQuizController).unscoredQuestionCount : 0;
     return controller
-      ? <ResultsView score={score} total={total} scaledScore={scaledScore} maximumScore={scoring.maximumScore} passingScore={scoring.passingScore} unscoredCount={unscoredCount} wrongQuestions={wrongQuestions} onBack={() => navigate("/home", { replace: true })} />
+      ? <ResultsView score={score} total={total} scaledScore={scaledScore} maximumScore={scoring.maximumScore} passingScore={scoring.passingScore} unscoredCount={unscoredCount} wrongQuestions={wrongQuestions} questionNumbers={problems.map(problem => problem.questionNumber)} onBack={() => navigate("/home", { replace: true })} />
       : <Navigate to="/home" replace />;
   };
 
@@ -265,14 +269,20 @@ export function App(): JSX.Element {
   if (questionDatabaseError) return <main className="app"><section className="card"><p className="feedback error">{questionDatabaseError}</p></section></main>;
   if (!questionDatabase || !hydrated) return <main className="app"><section className="card"><p>Loading questions...</p></section></main>;
 
-  return <Routes>
+  const openView = (path: string): void => {
+    active?.controller.pause();
+    navigate(path);
+  };
+
+  return <><AppMenu onHome={() => openView("/home")} onLearn={() => openView("/learn")} onInfinite={() => resume(false)} onTimed={() => resume(true)} onReports={() => openView("/reports")} onClearData={clearBrowserData} onPause={modeFromPath(location.pathname) === "timed" ? pause : undefined} onRestart={modeFromPath(location.pathname) ? restart : undefined} /><Routes>
     <Route path="/" element={<Navigate to="/home" replace />} />
-    <Route path="/home" element={<HomeView questionCount={problems.length} onInfinite={() => resume(false)} onTimed={() => resume(true)} onReports={() => navigate("/reports")} onClearBrowserData={clearBrowserData} />} />
+    <Route path="/home" element={<HomeView questionCount={problems.length} onLearn={() => openView("/learn")} />} />
+    <Route path="/learn" element={<LearnView problems={problems} questionHash={questionDatabase.hash} onBack={goBack} />} />
     <Route path="/infinite/:questionNumber?" element={quizRoute("infinite")} />
     <Route path="/timed/:questionNumber?" element={quizRoute("timed")} />
     <Route path="/results" element={resultsRoute()} />
     <Route path="/reports" element={<ReportView problems={problems} domains={domains} stats={reportStats} sort={reportSort} ascending={reportAscending} onSort={toggleReportSort} onClear={clearStatistics} onExport={exportStatistics} onImport={importStatistics} onBack={() => navigate("/home", { replace: true })} />} />
     <Route path="/reports/:questionNumber" element={<ReportDetailView problems={problems} domains={domains} onBack={() => navigate("/reports")} />} />
     <Route path="*" element={<Navigate to="/home" replace />} />
-  </Routes>;
+  </Routes></>;
 }

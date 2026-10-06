@@ -18,11 +18,12 @@
   </main>
 <!-- deployment-overlay:start -->
 <style>
-.deployment-toolbar { position: fixed; top: 1rem; right: 1rem; z-index: 100; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; max-width: calc(100vw - 2rem); padding: .85rem 1rem; border: 1px solid rgb(148 163 184 / 55%); border-radius: 1rem; background: rgb(248 250 252 / 65%); box-shadow: 0 6px 24px rgb(23 32 51 / 12%); backdrop-filter: blur(8px); color: #172033; font: 1rem/1.4 system-ui, sans-serif; opacity: .7; transition: opacity .18s ease, background-color .18s ease, box-shadow .18s ease; }
+.deployment-toolbar { position: fixed; top: 1rem; right: 1rem; z-index: 100; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; max-width: calc(100vw - 10rem); padding: .85rem 1rem; border: 1px solid rgb(148 163 184 / 55%); border-radius: 1rem; background: rgb(248 250 252 / 65%); box-shadow: 0 6px 24px rgb(23 32 51 / 12%); backdrop-filter: blur(8px); color: #172033; font: 1rem/1.4 system-ui, sans-serif; opacity: .7; transition: opacity .18s ease, background-color .18s ease, box-shadow .18s ease; }
 .deployment-toolbar:hover, .deployment-toolbar:focus-within { opacity: 1; background: #f8fafc; box-shadow: 0 8px 28px rgb(23 32 51 / 18%); }
 .deployment-toolbar .deployment-version { max-width: min(55vw, 20rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
 .deployment-toolbar select { min-width: 8rem; max-width: min(55vw, 22rem); padding: .55rem .7rem; border: 1px solid #94a3b8; border-radius: .65rem; background: white; color: inherit; font: inherit; }
 .deployment-toolbar select:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; }
+@media (max-width: 600px) { .deployment-toolbar { right: 1rem; max-width: calc(100vw - 8rem); padding: .45rem .6rem; gap: .4rem; font-size: .8rem; } .deployment-toolbar label { display: none; } .deployment-toolbar select { min-width: 0; max-width: 100%; width: 100%; padding: .3rem; } .deployment-toolbar .deployment-version { max-width: 100%; } }
 @media (prefers-reduced-motion: reduce) { .deployment-toolbar { transition: none; } }
 </style>
 <aside class="deployment-toolbar" aria-label="App version and branch" data-version="1.2.3" data-branch="main">

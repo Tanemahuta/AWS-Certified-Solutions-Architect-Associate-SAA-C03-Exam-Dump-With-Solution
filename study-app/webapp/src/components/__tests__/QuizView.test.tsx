@@ -11,7 +11,7 @@ const problems = [
 
 function renderQuiz() {
   const controller = startedInfiniteController(problems);
-  const handlers = { onBack: jest.fn(), onRestart: jest.fn(), onNext: jest.fn(() => controller.next()) };
+  const handlers = { onBack: jest.fn(), onNext: jest.fn(() => controller.next()) };
   render(<QuizView controller={controller} timed={false} {...handlers} />);
   return { controller, ...handlers };
 }
@@ -49,11 +49,10 @@ describe("QuizView", () => {
     expect(screen.getByText("Select 2 answers (0 selected)")).toBeInTheDocument();
   });
 
-  it("restarts and goes back via the header buttons", async () => {
-    const { onBack, onRestart } = renderQuiz();
-    await userEvent.click(screen.getByRole("button", { name: "Back" }));
-    await userEvent.click(screen.getByRole("button", { name: "Restart" }));
+  it("goes home and shows the original question number", async () => {
+    const { onBack } = renderQuiz();
+    await userEvent.click(screen.getByRole("button", { name: "Home" }));
     expect(onBack).toHaveBeenCalled();
-    expect(onRestart).toHaveBeenCalled();
+    expect(screen.getByText("Question 1 · 1 of 2")).toBeInTheDocument();
   });
 });
