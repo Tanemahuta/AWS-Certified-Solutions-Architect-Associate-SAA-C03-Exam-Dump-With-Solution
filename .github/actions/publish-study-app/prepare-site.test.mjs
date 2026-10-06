@@ -86,10 +86,10 @@ test("first preview publication creates a root placeholder with a working branch
     const manifest = await prepareSite({ ...options, branch: "feat/new", subdirectory: "feat/new" });
     const root = await readFile(resolve(options.output, "index.html"), "utf8");
     assert.match(root, /no published main version, yet\./);
-    assert.match(root, /value="feat\/new\/index.html">feat\/new<\/option>/);
-    assert.match(root, /value="index.html" selected>main<\/option>/);
-    assert.match(root, /value="feat\/keep\/index.html" disabled/);
-    assert.match(root, /window.location.assign\(new URL\(this.value, root\).href\)/);
+    assert.match(root, /value="feat\/new" data-path="feat\/new\/">feat\/new<\/option>/);
+    assert.match(root, /value="main" data-path="" selected>main<\/option>/);
+    assert.match(root, /value="feat\/keep" data-path="feat\/keep\/" disabled/);
+    assert.match(root, /class="deployment-toolbar"/);
     assert.deepEqual(manifest.find((item) => item.name === "main"), { name: "main", path: "", published: true, placeholder: true });
     assert.match(await readFile(resolve(options.output, "feat/new/index.html"), "utf8"), /new app/);
   });

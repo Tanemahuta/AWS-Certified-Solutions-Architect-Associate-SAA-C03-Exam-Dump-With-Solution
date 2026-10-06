@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Version selector preview</title>
+  <style>
+    body { margin: 0; background: #f1f5f9; color: #172033; font-family: system-ui, sans-serif; }
+    main { max-width: 60rem; margin: 2rem auto; padding: 2rem; border-radius: 1rem; background: white; }
+    p { line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Version selector preview</h1>
+    <p>The selector floats over this page. Hover over it or focus a control to make the box opaque.</p>
+    <p>Open this file directly to preview the shared HTML, styles, and behavior used by the app and the root placeholder.</p>
+  </main>
+<!-- deployment-overlay:start -->
+<style>
+.deployment-toolbar { position: fixed; top: 1rem; right: 1rem; z-index: 100; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; max-width: calc(100vw - 2rem); padding: .85rem 1rem; border: 1px solid rgb(148 163 184 / 55%); border-radius: 1rem; background: rgb(248 250 252 / 65%); box-shadow: 0 6px 24px rgb(23 32 51 / 12%); backdrop-filter: blur(8px); color: #172033; font: 1rem/1.4 system-ui, sans-serif; opacity: .7; transition: opacity .18s ease, background-color .18s ease, box-shadow .18s ease; }
+.deployment-toolbar:hover, .deployment-toolbar:focus-within { opacity: 1; background: #f8fafc; box-shadow: 0 8px 28px rgb(23 32 51 / 18%); }
+.deployment-toolbar .deployment-version { max-width: min(55vw, 20rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.deployment-toolbar select { min-width: 8rem; max-width: min(55vw, 22rem); padding: .55rem .7rem; border: 1px solid #94a3b8; border-radius: .65rem; background: white; color: inherit; font: inherit; }
+.deployment-toolbar select:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .deployment-toolbar { transition: none; } }
+</style>
+<aside class="deployment-toolbar" aria-label="App version and branch" data-version="1.2.3" data-branch="main">
+  <span class="deployment-version">v1.2.3</span>
+  <label for="deployment-branch">Branch</label>
+  <select id="deployment-branch">
+    <!-- overlay-options:start -->
+    <option value="main" data-path="" selected>main</option>
+    <option value="feature/preview" data-path="feature/preview/">feature/preview</option>
+    <!-- overlay-options:end -->
+  </select>
+</aside>
+<script>
+(() => {
+  const toolbar = document.querySelector('.deployment-toolbar');
+  const selector = document.getElementById('deployment-branch');
+  const version = toolbar.dataset.version;
+  const branch = toolbar.dataset.branch;
+  const versionLabel = toolbar.querySelector('.deployment-version');
+  versionLabel.textContent = version === 'unpublished' ? 'Unpublished' : version === 'dev' ? 'dev' : 'v' + version;
+  versionLabel.title = versionLabel.textContent;
+  const siteRoot = document.querySelector('meta[name="study-app-site-root"]')?.content;
+
+  selector.addEventListener('change', () => {
+    const selected = selector.selectedOptions[0];
+    if (siteRoot && selected && !selected.disabled) {
+      window.location.assign(new URL(selected.dataset.path + 'index.html', siteRoot).href);
+    }
+  });
+
+  if (!siteRoot || !['http:', 'https:'].includes(window.location.protocol)) return;
+  fetch(new URL('branches.json', siteRoot), { cache: 'no-store' })
+    .then(response => {
+      if (!response.ok) throw new Error('Branch list unavailable');
+      return response.json();
+    })
+    .then(manifest => {
+      const options = manifest.branches.map(item => {
+        const option = document.createElement('option');
+        option.value = item.name;
+        option.dataset.path = item.path;
+        option.disabled = !item.published;
+        option.textContent = item.name + (item.published ? '' : ' (build pending)');
+        return option;
+      });
+      if (!manifest.branches.some(item => item.name === branch)) {
+        const deleted = document.createElement('option');
+        deleted.value = branch;
+        deleted.textContent = branch + ' (deleted)';
+        deleted.disabled = true;
+        options.unshift(deleted);
+      }
+      selector.replaceChildren(...options);
+      selector.value = branch;
+    })
+    .catch(() => { /* Keep the embedded options when offline or downloading the app. */ });
+})();
+</script>
+<!-- deployment-overlay:end -->
+</body>
+</html>

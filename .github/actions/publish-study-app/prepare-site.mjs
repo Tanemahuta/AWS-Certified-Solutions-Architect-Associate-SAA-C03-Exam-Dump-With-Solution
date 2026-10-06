@@ -1,6 +1,7 @@
 import { readFile, writeFile, mkdir, rm, lstat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { renderDeploymentOverlay } from "../../../study-app/scripts/deployment-overlay.mjs";
 
 const reserved = new Set(["index.html", "build.json", "branches.json", "CNAME", ".nojekyll"]);
 
@@ -20,10 +21,6 @@ const escapeAttribute = (text) => text.replaceAll("&", "&amp;").replaceAll('"', 
 const placeholderMarker = '<meta name="study-app-placeholder" content="main">';
 
 function rootPlaceholder(branches, rootUrl) {
-  const options = branches.map((item) => {
-    const label = `${item.name}${item.published ? "" : " (build pending)"}`;
-    return `<option value="${escapeAttribute(`${item.path}index.html`)}"${item.name === "main" ? " selected" : ""}${item.published ? "" : " disabled"}>${escapeAttribute(label)}</option>`;
-  }).join("\n");
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -34,20 +31,12 @@ ${placeholderMarker}
 <title>AWS SAA-C03 Exam Prep</title>
 <style>
 body { margin: 0; background: #f1f5f9; color: #172033; font-family: system-ui, sans-serif; }
-aside { position: fixed; top: 1rem; right: 1rem; display: flex; align-items: center; gap: .5rem; }
-select { max-width: 60vw; padding: .4rem; border: 1px solid #94a3b8; border-radius: .35rem; font: inherit; background: white; }
 main { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 0 1rem; box-sizing: border-box; }
 </style>
 </head>
 <body>
-<aside aria-label="Branch selection"><label for="deployment-branch">Branch</label><select id="deployment-branch">${options}</select></aside>
 <main><p>no published main version, yet.</p></main>
-<script>
-document.getElementById('deployment-branch').addEventListener('change', function () {
-  const root = document.querySelector('meta[name="study-app-site-root"]').content;
-  window.location.assign(new URL(this.value, root).href);
-});
-</script>
+${renderDeploymentOverlay({ version: "unpublished", branch: "main", branches })}
 </body>
 </html>
 `;
