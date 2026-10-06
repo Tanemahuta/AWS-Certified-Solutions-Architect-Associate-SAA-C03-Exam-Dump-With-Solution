@@ -9,6 +9,11 @@
       "name": "fix/questions",
       "path": "fix/questions/",
       "published": true
+    },
+    {
+      "name": "fix/required-ci-check",
+      "path": "fix/required-ci-check/",
+      "published": true
     }
   ]
 }
