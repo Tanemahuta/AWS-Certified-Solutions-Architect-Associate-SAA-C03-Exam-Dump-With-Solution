@@ -4,11 +4,6 @@
       "name": "main",
       "path": "",
       "published": true
-    },
-    {
-      "name": "feat/improve-readability",
-      "path": "feat/improve-readability/",
-      "published": true
     }
   ]
 }
