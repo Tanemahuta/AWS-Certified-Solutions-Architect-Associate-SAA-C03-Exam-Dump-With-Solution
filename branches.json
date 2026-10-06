@@ -6,6 +6,11 @@
       "published": true
     },
     {
+      "name": "feat/learn-mode-navigation",
+      "path": "feat/learn-mode-navigation/",
+      "published": true
+    },
+    {
       "name": "fix/questions",
       "path": "fix/questions/",
       "published": true
