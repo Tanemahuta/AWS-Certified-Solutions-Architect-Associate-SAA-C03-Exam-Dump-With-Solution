@@ -6,6 +6,7 @@
     [
       "@semantic-release/github",
       {
+        "releaseBodyTemplate": "[Open the study app on GitHub Pages](https://tanemahuta.github.io/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/).\n\nDownload the attached index.html to study offline.\n\n<%= nextRelease.notes || '' %>",
         "assets": [{ "path": "dist/index.html", "name": "index.html", "label": "SAA-C03 study app (index.html)" }],
         "successComment": false,
         "failComment": false,

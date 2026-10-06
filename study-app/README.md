@@ -3,6 +3,9 @@
 A TypeScript CLI that extracts questions and choices from the PDF in the repository root, matches the correct answer
 and explanation from the solution text, and a single-file React web app to study the resulting question database.
 
+[Open the hosted study app on GitHub Pages](https://tanemahuta.github.io/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/),
+with a version selector for main and published branch previews.
+
 Download the ready-to-use app as `index.html` from the [latest release](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest)
 ([direct download](https://github.com/Iamrushabhshahh/AWS-Certified-Solutions-Architect-Associate-SAA-C03-Exam-Dump-With-Solution/releases/latest/download/index.html)) and open it in a browser. Answer statistics and quiz sessions are
 stored only in the browser's local storage. Nothing leaves your machine.
