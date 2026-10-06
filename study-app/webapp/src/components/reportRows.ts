@@ -21,6 +21,11 @@ export function formatLastFailureAt(lastFailureAt?: number): string {
   return lastFailureAt === undefined ? "-" : new Date(lastFailureAt).toISOString().slice(0, 16);
 }
 
+export function questionPreview(question: string): string {
+  const text = question.replace(/<\/?p>|<br\s*\/?>|<code(?: class="language-[\w-]+")?>|<\/code>/gi, " ").replace(/\s+/g, " ").trim();
+  return `${text.slice(0, 64)}${text.length > 64 ? "..." : ""}`;
+}
+
 export function reportRows(problems: readonly Problem[], domains: readonly string[], stats: AnswerStatisticsData): ReportRow[] {
   return problems
     .flatMap((problem, index) => {
