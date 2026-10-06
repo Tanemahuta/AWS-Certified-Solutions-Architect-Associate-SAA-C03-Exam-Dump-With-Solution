@@ -62,6 +62,8 @@ Root publication preserves active branch previews. Branch deletion removes **all
 the same cleanup also runs on every publication. Publication is queued to prevent concurrent changes from
 overwriting each other, and a stale build cannot replace a newer branch HEAD. The `gh-pages` branch stores
 the complete site and is excluded from source CI.
+If the root `index.html` has not been published yet, the publisher creates a placeholder with the branch
+dropdown and the message "no published main version, yet." A successful main publication replaces it.
 
 The upper-right toolbar displays the embedded version and a branch dropdown. Its branch list is loaded from
 the site's root `branches.json`, including from nested previews. Active branches without a successful published
