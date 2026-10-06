@@ -93,3 +93,8 @@ plus the NYC YAML replacement. CI runs these alongside the existing tests.
 
 Dependabot pull requests (patch/minor, and major for direct development dependencies) and pull requests by the
 repository owner are approved and auto-merged by the [pull request automation](../.github/workflows/pr.yaml).
+That same workflow opens missing pull requests for all repository source branches on branch pushes,
+hourly, and when manually dispatched. It skips the default branch, `gh-pages`, branches with any open PR
+(including drafts), and branches with no commits ahead of the default branch. Closed unmerged PRs do not
+prevent a new PR from being opened. The existing `AUTO_RELEASE_TOKEN` must have contents read and pull
+requests write permissions; using it allows PR checks and approval automation to run without an approval prompt.

@@ -1,9 +1,14 @@
 name: pull request automation
 
 on:
+  push:
+    branches-ignore: [gh-pages]
   pull_request_target:
     branches: [main]
     types: [opened, reopened, synchronize, labeled, ready_for_review]
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -11,8 +16,87 @@ permissions:
   pull-requests: write
 
 jobs:
+  open-missing-pull-requests:
+    if: github.event_name != 'pull_request_target' && github.event.deleted != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    concurrency:
+      group: open-pull-requests-${{ github.repository_id }}
+      queue: max
+      cancel-in-progress: false
+    steps:
+      - name: Require token that triggers PR checks automatically
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_RELEASE_TOKEN }}
+        run: |
+          if [[ -z "${GH_TOKEN}" ]]; then
+            echo 'Configure AUTO_RELEASE_TOKEN with repository contents read and pull requests write permissions.' >&2
+            exit 1
+          fi
+      - name: Open a pull request for every source branch without one
+        uses: actions/github-script@v9.0.0
+        with:
+          # A personal/app token lets newly created PRs trigger checks and the existing approval workflow.
+          github-token: ${{ secrets.AUTO_RELEASE_TOKEN }}
+          script: |
+            const { owner, repo } = context.repo;
+            const { data: repository } = await github.rest.repos.get({ owner, repo });
+            const base = repository.default_branch;
+            const branches = await github.paginate(github.rest.repos.listBranches, { owner, repo, per_page: 100 });
+            const pulls = await github.paginate(github.rest.pulls.list, { owner, repo, state: 'open', per_page: 100 });
+            const represented = new Set(pulls
+              .filter(pr => pr.head.repo?.full_name.toLowerCase() === repository.full_name.toLowerCase())
+              .map(pr => pr.head.ref));
+
+            for (const branch of branches) {
+              if (branch.name === base || branch.name === 'gh-pages' || represented.has(branch.name)) continue;
+              let comparison;
+              try {
+                ({ data: comparison } = await github.rest.repos.compareCommitsWithBasehead({
+                  owner, repo, basehead: `${base}...${branch.name}`,
+                }));
+              } catch (error) {
+                if (error.status === 404) {
+                  core.info(`Skipping branch ${branch.name}; it was deleted or has unrelated history.`);
+                  continue;
+                }
+                throw error;
+              }
+              if (comparison.ahead_by === 0) {
+                core.info(`Skipping ${branch.name}; it has no commits ahead of ${base}.`);
+                continue;
+              }
+
+              const commits = comparison.commits.slice(-20)
+                .map(commit => `- ${commit.commit.message.split('\n')[0]}`)
+                .join('\n');
+              try {
+                const { data: pull } = await github.rest.pulls.create({
+                  owner, repo, base, head: branch.name,
+                  title: `chore: merge ${branch.name} into ${base}`,
+                  body: `Changes from \`${branch.name}\` targeting \`${base}\`.\n\nRecent commits:\n${commits}\n\nOpened automatically because this branch has changes and no open pull request.`,
+                });
+                represented.add(branch.name);
+                core.info(`Opened ${pull.html_url}`);
+              } catch (error) {
+                if (error.status === 422) {
+                  const { data: existing } = await github.rest.pulls.list({
+                    owner, repo, state: 'open', head: `${owner}:${branch.name}`,
+                  });
+                  if (existing.length > 0) {
+                    core.info(`A pull request for ${branch.name} was opened concurrently.`);
+                    continue;
+                  }
+                }
+                throw error;
+              }
+            }
+
   approve-and-enable-auto-merge:
-    if: github.event.pull_request.draft == false
+    if: github.event_name == 'pull_request_target' && github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout trusted automation
