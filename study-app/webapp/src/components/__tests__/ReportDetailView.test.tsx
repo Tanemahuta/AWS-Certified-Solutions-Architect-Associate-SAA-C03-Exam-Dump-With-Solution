@@ -27,8 +27,8 @@ describe("ReportDetailView", () => {
     renderAt("/reports/2");
     expect(screen.getByText("Question 2 · Resilience")).toBeInTheDocument();
     expect(screen.getByRole("heading")).toHaveTextContent("Second questionwith a second line");
-    expect(screen.getByText("B. Right")).toHaveClass("correct");
-    expect(screen.getByText("A. Wrong")).not.toHaveClass("correct");
+    expect(screen.getByText("Right").closest(".report-answer")).toHaveClass("correct");
+    expect(screen.getByText("Wrong").closest(".report-answer")).not.toHaveClass("correct");
     expect(screen.getByText("Because it is right.")).toBeInTheDocument();
   });
 
