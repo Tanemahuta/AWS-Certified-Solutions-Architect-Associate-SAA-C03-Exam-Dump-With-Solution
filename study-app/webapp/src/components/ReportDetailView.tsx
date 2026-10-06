@@ -1,7 +1,6 @@
 import type { JSX } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import type { Problem } from "../model/Problem";
-import { Icon } from "./Icon";
 import { ChoiceList, QuestionHeading } from "./QuestionContent";
 
 interface ReportDetailViewProps {
@@ -24,5 +23,5 @@ export function ReportDetailView({ problems, domains, onBack }: ReportDetailView
   const index = reportQuestionIndex(questionNumber);
   const problem = index === undefined ? undefined : problems[index];
   if (index === undefined || !problem) return <Navigate to="/reports" replace />;
-  return <main className="app"><section className="card"><header><button className="button button--secondary" onClick={onBack}><Icon name="chart" />Back to report</button><span>Question {problem.questionNumber} · {domains[index]}</span></header><QuestionHeading problem={problem} /><ChoiceList choices={problem.choices} showAllExplanations /></section></main>;
+  return <main className="app"><section className="card"><header><button className="button button--secondary" onClick={onBack}><span className="icon mdi mdi-chart-bar" aria-hidden="true" />Back to report</button><span>Question {problem.questionNumber} · {domains[index]}</span></header><QuestionHeading problem={problem} /><ChoiceList choices={problem.choices} showAllExplanations /></section></main>;
 }

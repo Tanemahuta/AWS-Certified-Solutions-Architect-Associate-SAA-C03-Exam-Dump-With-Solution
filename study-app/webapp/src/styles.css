@@ -79,7 +79,7 @@ h1 { line-height: 1.3; font-size: var(--question-font-size); }
 .choices, .answer-panel > .choices { overflow: visible; min-height: auto; }
 .button--primary:not(:disabled):hover { background: #3730a3; box-shadow: 0 4px 10px #312e8130; }
 .button:focus-visible, summary:focus-visible, select:focus-visible, .report-scroll:focus-visible { outline: 3px solid #6366f1; outline-offset: 3px; }
-.icon { width: 1.35em; height: 1.35em; flex: 0 0 auto; }
+.icon { display: inline-block; width: 1em; height: 1em; font-size: 1.35em; line-height: 1; flex: 0 0 auto; }
 .home-card { justify-content: center; align-items: flex-start; gap: .75rem; }
 .home-card h1 { font-size: clamp(1.75rem, 5vw, 3rem); max-width: 20ch; margin: 0; }
 .home-card p { max-width: 50ch; line-height: 1.6; }
@@ -122,3 +122,19 @@ h1 { line-height: 1.3; font-size: var(--question-font-size); }
 .actions .button--icon { width: 44px; }
 
 .answer-controls { border: 0; padding: 0; margin: 0; min-width: 0; }
+
+.learn-swipe { touch-action: pan-y pinch-zoom; }
+.modal-dialog { width: min(26rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; border: 1px solid #cbd5e1; border-radius: 1rem; color: #172033; background: white; box-shadow: 0 20px 60px #17203340; }
+.modal-dialog::backdrop { background: #17203380; backdrop-filter: blur(3px); }
+.modal-content { padding: 1.5rem; }
+.modal-content h2 { margin: 0 0 1.25rem; }
+.number-spinner { display: flex; gap: .75rem; align-items: center; margin: .75rem 0 1.5rem; }
+.number-spinner input { min-width: 0; width: 100%; min-height: 48px; padding: .6rem; font: inherit; border: 1px solid #94a3b8; border-radius: .6rem; text-align: center; }
+.number-spinner input:focus-visible { outline: 3px solid #6366f1; outline-offset: 2px; }
+.dialog-actions { display: grid; grid-template-columns: auto auto; justify-content: space-between; align-items: center; }
+.dialog-actions .button { width: auto; min-width: 5rem; }
+
+.button--success { background: #dcfce7; color: #166534; border-color: #86efac; }
+.button--success:not(:disabled):hover { background: #bbf7d0; }
+
+.icon::before { font-size: inherit; }
