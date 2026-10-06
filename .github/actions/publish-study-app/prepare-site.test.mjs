@@ -77,3 +77,46 @@ test("rejects path traversal and escapes branches that collide with root files",
   assert.equal(branchDirectory("index.html"), "~index.html/");
   assert.equal(branchDirectory("branches.json/topic"), "~branches.json/topic/");
 });
+
+test("first preview publication creates a root placeholder with a working branch selector", async () => {
+  await fixture(async ({ options, file }) => {
+    await rm(options.previous, { recursive: true });
+    await mkdir(options.previous);
+    await file(options.build, "build.json", JSON.stringify({ branch: "feat/new", sha: "new-sha", version: "1.1.0-preview.shanew" }));
+    const manifest = await prepareSite({ ...options, branch: "feat/new", subdirectory: "feat/new" });
+    const root = await readFile(resolve(options.output, "index.html"), "utf8");
+    assert.match(root, /no published main version, yet\./);
+    assert.match(root, /value="feat\/new\/index.html">feat\/new<\/option>/);
+    assert.match(root, /value="index.html" selected>main<\/option>/);
+    assert.match(root, /value="feat\/keep\/index.html" disabled/);
+    assert.match(root, /window.location.assign\(new URL\(this.value, root\).href\)/);
+    assert.deepEqual(manifest.find((item) => item.name === "main"), { name: "main", path: "", published: true, placeholder: true });
+    assert.match(await readFile(resolve(options.output, "feat/new/index.html"), "utf8"), /new app/);
+  });
+});
+
+test("main publication replaces a previous placeholder with the real app", async () => {
+  await fixture(async ({ options, file }) => {
+    await rm(resolve(options.previous, "index.html"));
+    await prepareSite({ ...options, branch: "main", cleanupOnly: true });
+    await file(options.previous, "index.html", await readFile(resolve(options.output, "index.html"), "utf8"));
+    await file(options.build, "build.json", JSON.stringify({ branch: "main", sha: "main-sha", version: "1.1.0" }));
+    const manifest = await prepareSite({ ...options, branch: "main" });
+    const root = await readFile(resolve(options.output, "index.html"), "utf8");
+    assert.match(root, /new app/);
+    assert.doesNotMatch(root, /no published main version|study-app-placeholder/);
+    assert.equal(manifest.find((item) => item.name === "main").placeholder, undefined);
+  });
+});
+
+test("an existing placeholder is refreshed when the available branches change", async () => {
+  await fixture(async ({ options, file }) => {
+    await rm(resolve(options.previous, "index.html"));
+    await prepareSite({ ...options, branch: "main", cleanupOnly: true });
+    await file(options.previous, "index.html", await readFile(resolve(options.output, "index.html"), "utf8"));
+    await prepareSite({ ...options, branch: "main", cleanupOnly: true, branches: options.branches.filter((item) => item.name !== "feat/keep") });
+    const root = await readFile(resolve(options.output, "index.html"), "utf8");
+    assert.match(root, /no published main version, yet\./);
+    assert.doesNotMatch(root, /feat\/keep/);
+  });
+});

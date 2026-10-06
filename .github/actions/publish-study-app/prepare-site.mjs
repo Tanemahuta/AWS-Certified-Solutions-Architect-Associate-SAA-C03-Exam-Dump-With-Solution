@@ -17,6 +17,41 @@ export function branchDirectory(branch) {
 
 const urlPath = (path) => path.split("/").map(encodeURIComponent).join("/");
 const escapeAttribute = (text) => text.replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+const placeholderMarker = '<meta name="study-app-placeholder" content="main">';
+
+function rootPlaceholder(branches, rootUrl) {
+  const options = branches.map((item) => {
+    const label = `${item.name}${item.published ? "" : " (build pending)"}`;
+    return `<option value="${escapeAttribute(`${item.path}index.html`)}"${item.name === "main" ? " selected" : ""}${item.published ? "" : " disabled"}>${escapeAttribute(label)}</option>`;
+  }).join("\n");
+  return `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="study-app-site-root" content="${escapeAttribute(rootUrl)}">
+${placeholderMarker}
+<title>AWS SAA-C03 Exam Prep</title>
+<style>
+body { margin: 0; background: #f1f5f9; color: #172033; font-family: system-ui, sans-serif; }
+aside { position: fixed; top: 1rem; right: 1rem; display: flex; align-items: center; gap: .5rem; }
+select { max-width: 60vw; padding: .4rem; border: 1px solid #94a3b8; border-radius: .35rem; font: inherit; background: white; }
+main { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 0 1rem; box-sizing: border-box; }
+</style>
+</head>
+<body>
+<aside aria-label="Branch selection"><label for="deployment-branch">Branch</label><select id="deployment-branch">${options}</select></aside>
+<main><p>no published main version, yet.</p></main>
+<script>
+document.getElementById('deployment-branch').addEventListener('change', function () {
+  const root = document.querySelector('meta[name="study-app-site-root"]').content;
+  window.location.assign(new URL(this.value, root).href);
+});
+</script>
+</body>
+</html>
+`;
+}
 
 async function readRegularFile(path) {
   try {
@@ -40,6 +75,11 @@ export async function prepareSite({ previous, output, build, branches, branch, s
     const directory = branchDirectory(item.name);
     let html = await readRegularFile(resolve(previous, directory, "index.html"));
     let metadata = await readRegularFile(resolve(previous, directory, "build.json"));
+    // Regenerate placeholders each time so their branch list stays current.
+    if (item.name === "main" && html?.includes(placeholderMarker)) {
+      html = undefined;
+      metadata = undefined;
+    }
     if (!cleanupOnly && item.name === branch) {
       if ((subdirectory ? branchDirectory(subdirectory) : "") !== directory) throw new Error("Subdirectory must match the source branch");
       const candidate = JSON.parse(await readFile(resolve(build, "build.json"), "utf8"));
@@ -61,6 +101,16 @@ export async function prepareSite({ previous, output, build, branches, branch, s
       if (metadata) await writeFile(resolve(destination, "build.json"), metadata);
     }
     manifest.push({ name: item.name, path: urlPath(directory), published: Boolean(html) });
+  }
+  let main = manifest.find((item) => item.name === "main");
+  if (!main?.published) {
+    if (!main) {
+      main = { name: "main", path: "", published: false };
+      manifest.unshift(main);
+    }
+    main.published = true;
+    main.placeholder = true;
+    await writeFile(resolve(output, "index.html"), rootPlaceholder(manifest, rootUrl));
   }
   const cname = await readRegularFile(resolve(previous, "CNAME"));
   if (cname) await writeFile(resolve(output, "CNAME"), cname);
