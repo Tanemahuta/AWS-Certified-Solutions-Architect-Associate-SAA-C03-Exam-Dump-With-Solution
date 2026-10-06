@@ -1,11 +1,6 @@
 name: dependency quality
 
 on:
-  push:
-    branches-ignore: [main, gh-pages]
-  pull_request:
-  merge_group:
-    types: [checks_requested]
   schedule:
     - cron: '41 6 * * 1'
   workflow_dispatch:
