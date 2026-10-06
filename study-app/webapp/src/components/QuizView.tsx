@@ -15,10 +15,13 @@ interface QuizViewProps {
   controller: TimedQuizController | InfiniteQuizController;
   timed: boolean;
   onBack: () => void;
+  paused?: boolean;
+  onPause?: () => void;
+  onRestart: () => void;
   onNext: () => void;
 }
 
-export function QuizView({ controller, timed, onBack, onNext }: QuizViewProps): JSX.Element {
+export function QuizView({ controller, timed, onBack, paused = false, onPause, onRestart, onNext }: QuizViewProps): JSX.Element {
   useSyncExternalStore(controller.subscribe.bind(controller), () => controller.stateVersion, () => controller.stateVersion);
   const current = controller.currentQuestion;
   const remainingSeconds = timed ? (controller as TimedQuizController).remainingSeconds : undefined;
@@ -32,6 +35,7 @@ export function QuizView({ controller, timed, onBack, onNext }: QuizViewProps): 
   // "n" submits the pending selection (advancing immediately when correct), otherwise advances.
   // Navigation goes through onNext so the parent can handle session completion (results view).
   const submitOrNext = (): void => {
+    if (paused) return;
     if (controller.hasSubmitted) {
       onNext();
       return;
@@ -43,10 +47,10 @@ export function QuizView({ controller, timed, onBack, onNext }: QuizViewProps): 
     { key: "n", action: submitOrNext },
     ...controller.currentChoices.flatMap((choice, index) => {
       const key = choiceShortcutKey(index);
-      return key ? [{ key, action: () => controller.answer(choice), enabled: !controller.hasSubmitted }] : [];
+      return key ? [{ key, action: () => controller.answer(choice), enabled: !paused && !controller.hasSubmitted }] : [];
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  ], [controller, controller.currentChoices, controller.hasSubmitted]);
+  ], [controller, controller.currentChoices, controller.hasSubmitted, paused]);
   useKeyboardShortcuts(shortcuts);
-  return <main className="app"><section className="card quiz-card"><header className="quiz-header"><button onClick={onBack} aria-label="Home"><Icon name="home" />Home</button><div className="quiz-status"><span>Question {current.questionNumber} · {controller.questionNumber} of {controller.totalQuestions}</span>{timed && <QuizProgressBar value={timedRemainingQuestions ?? 0} max={controller.totalQuestions} label={`${timedRemainingQuestions ?? 0} questions remaining`}/>}<QuizProgressBar value={progressValue} max={progressMax} label={progressLabel} showLabel={!timed}/>{timed && <strong className="timer">{minutes}:{seconds}</strong>}</div></header><QuestionHeading problem={current} /><AnswerPanel controller={controller}/><div className="actions">{timed && controller.questionNumber > 1 && <button onClick={() => controller.previous()}>Previous question</button>}<button onClick={submitOrNext} disabled={!controller.hasSubmitted && !controller.canSubmit}>{controller.hasSubmitted ? "Next question" : "Submit answer"} <kbd className="action-shortcut">N</kbd></button><ProgressSummary answered={controller.answeredCount} incorrect={controller.incorrectCount} successRate={controller.successRate} remaining={remaining}/></div></section></main>;
+  return <main className="app"><section className="card quiz-card"><header className="quiz-header"><button className="button button--secondary button--icon" onClick={onBack} aria-label="Home" title="Home"><Icon name="home" /></button><div className="quiz-status"><span>Question {current.questionNumber} · {controller.questionNumber} of {controller.totalQuestions}</span>{timed && <QuizProgressBar value={timedRemainingQuestions ?? 0} max={controller.totalQuestions} label={`${timedRemainingQuestions ?? 0} questions remaining`}/>}<QuizProgressBar value={progressValue} max={progressMax} label={progressLabel} showLabel={!timed}/>{timed && <strong className="timer">{minutes}:{seconds}</strong>}</div>{timed && <button className="button button--secondary button--icon" onClick={onPause} aria-label={paused ? "Resume test" : "Pause test"} title={paused ? "Resume test" : "Pause test"}><Icon name={paused ? "play" : "pause"} /></button>}</header><QuestionHeading problem={current} />{paused && <p className="feedback" role="status">Test paused</p>}<fieldset className="answer-controls" disabled={paused}><AnswerPanel controller={controller}/></fieldset><div className="actions">{timed && controller.questionNumber > 1 && <button className="button button--primary" onClick={() => controller.previous()} disabled={paused}>Previous question</button>}<button className="button button--primary" onClick={submitOrNext} disabled={paused || (!controller.hasSubmitted && !controller.canSubmit)}>{controller.hasSubmitted ? "Next question" : "Submit answer"} <kbd className="action-shortcut">N</kbd></button><button className="button button--secondary button--restart" onClick={onRestart}><Icon name="restart" />Restart</button><ProgressSummary answered={controller.answeredCount} incorrect={controller.incorrectCount} successRate={controller.successRate} remaining={remaining}/></div></section></main>;
 }

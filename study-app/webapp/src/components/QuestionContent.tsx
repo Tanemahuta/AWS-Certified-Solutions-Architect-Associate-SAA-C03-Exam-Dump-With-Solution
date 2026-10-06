@@ -31,7 +31,7 @@ export function ChoiceList({ choices, selected = [], revealed = true, onSelect, 
     const explanation = revealed && (showAllExplanations || choice.correct || isSelected) && choice.explanation;
     const content: ReactNode = <><span><span>{choiceLabel(index)}. </span><QuestionText text={choice.solution} /></span>{onSelect && !revealed && <kbd className="choice-shortcut">{choiceShortcutKey(index)}</kbd>}</>;
     return <div className="choice-result" key={index}>
-      {onSelect ? <button className={className} onClick={() => onSelect(choice)} disabled={revealed}>{content}</button>
+      {onSelect ? <button className={`button button--choice ${className}`} onClick={() => onSelect(choice)} disabled={revealed}>{content}</button>
         : <div className={`report-answer ${className}`}>{content}</div>}
       {explanation && <div className={`choice-explanation ${choice.correct ? "explanation-correct" : ""}`}><QuestionText text={choice.explanation ?? ""} /></div>}
     </div>;
