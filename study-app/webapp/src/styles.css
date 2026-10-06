@@ -84,16 +84,6 @@ button { min-height: 44px; display: inline-flex; align-items: center; justify-co
 button:not(:disabled):hover { background: #3730a3; box-shadow: 0 4px 10px #312e8130; }
 button:focus-visible, summary:focus-visible, select:focus-visible, .report-scroll:focus-visible { outline: 3px solid #6366f1; outline-offset: 3px; }
 .icon { width: 1.35em; height: 1.35em; flex: 0 0 auto; }
-.app-menu { position: fixed; top: 1rem; left: 1rem; z-index: 110; }
-.menu-trigger { background: #fff; color: #312e81; border-color: #c7d2fe; box-shadow: 0 4px 16px #17203318; }
-.menu-trigger:not(:disabled):hover { background: #eef2ff; }
-.menu-panel { position: absolute; left: 0; top: calc(100% + .5rem); width: min(20rem, calc(100vw - 2rem)); max-height: calc(100dvh - 5rem); overflow-y: auto; padding: .6rem; border: 1px solid #cbd5e1; border-radius: 1rem; background: #fffffff5; backdrop-filter: blur(12px); box-shadow: 0 12px 40px #17203330; display: grid; gap: .25rem; }
-.menu-panel button, .menu-panel summary { width: 100%; justify-content: flex-start; color: #172033; background: transparent; box-shadow: none; padding: .8rem; border-radius: .65rem; }
-.menu-panel button:hover, .menu-panel summary:hover { background: #eef2ff; }
-.menu-panel summary { display: flex; align-items: center; gap: .6rem; cursor: pointer; min-height: 44px; }
-.menu-panel summary::after { content: '⌄'; margin-left: auto; }
-.menu-panel details[open] summary::after { content: '⌃'; }
-.menu-panel details > div { padding-left: 1rem; display: grid; }
 .home-card { justify-content: center; align-items: flex-start; gap: .75rem; }
 .home-card h1 { font-size: clamp(1.75rem, 5vw, 3rem); max-width: 20ch; margin: 0; }
 .home-card p { max-width: 50ch; line-height: 1.6; }
@@ -118,6 +108,8 @@ button:focus-visible, summary:focus-visible, select:focus-visible, .report-scrol
   .learn-navigation label { width: 100%; }
   .quiz-header { align-items: center; }
   .report-table { min-width: 36rem; }
-  .app-menu { top: .75rem; left: .75rem; }
 }
 @media (prefers-reduced-motion: reduce) { button { transition: none; } }
+
+.home-navigation { justify-content: flex-start; width: 100%; }
+.quiz-header { grid-template-columns: auto minmax(0, 1fr) auto; }

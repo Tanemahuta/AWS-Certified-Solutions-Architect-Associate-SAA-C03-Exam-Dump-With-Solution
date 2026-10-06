@@ -15,7 +15,7 @@ export function useKeyboardShortcuts(shortcuts: readonly KeyboardShortcut[]): vo
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent): void => {
       const target = event.target;
-      if (target instanceof Element && target.closest("input, select, textarea, [contenteditable=true], .app-menu")) return;
+      if (target instanceof Element && target.closest("input, select, textarea, [contenteditable=true]")) return;
       const shortcut = shortcuts.find((candidate) => matchesKeyboardShortcut(candidate, event));
       if (!shortcut) return;
       event.preventDefault();

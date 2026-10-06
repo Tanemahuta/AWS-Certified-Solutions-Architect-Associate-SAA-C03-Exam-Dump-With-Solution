@@ -11,7 +11,7 @@ const problems = [
 
 function renderQuiz() {
   const controller = startedInfiniteController(problems);
-  const handlers = { onBack: jest.fn(), onNext: jest.fn(() => controller.next()) };
+  const handlers = { onBack: jest.fn(), onRestart: jest.fn(), onNext: jest.fn(() => controller.next()) };
   render(<QuizView controller={controller} timed={false} {...handlers} />);
   return { controller, ...handlers };
 }

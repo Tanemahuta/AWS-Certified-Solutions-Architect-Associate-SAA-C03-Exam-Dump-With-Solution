@@ -15,10 +15,12 @@ interface QuizViewProps {
   controller: TimedQuizController | InfiniteQuizController;
   timed: boolean;
   onBack: () => void;
+  onPause?: () => void;
+  onRestart: () => void;
   onNext: () => void;
 }
 
-export function QuizView({ controller, timed, onBack, onNext }: QuizViewProps): JSX.Element {
+export function QuizView({ controller, timed, onBack, onPause, onRestart, onNext }: QuizViewProps): JSX.Element {
   useSyncExternalStore(controller.subscribe.bind(controller), () => controller.stateVersion, () => controller.stateVersion);
   const current = controller.currentQuestion;
   const remainingSeconds = timed ? (controller as TimedQuizController).remainingSeconds : undefined;
@@ -48,5 +50,5 @@ export function QuizView({ controller, timed, onBack, onNext }: QuizViewProps): 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   ], [controller, controller.currentChoices, controller.hasSubmitted]);
   useKeyboardShortcuts(shortcuts);
-  return <main className="app"><section className="card quiz-card"><header className="quiz-header"><button onClick={onBack} aria-label="Home"><Icon name="home" />Home</button><div className="quiz-status"><span>Question {current.questionNumber} · {controller.questionNumber} of {controller.totalQuestions}</span>{timed && <QuizProgressBar value={timedRemainingQuestions ?? 0} max={controller.totalQuestions} label={`${timedRemainingQuestions ?? 0} questions remaining`}/>}<QuizProgressBar value={progressValue} max={progressMax} label={progressLabel} showLabel={!timed}/>{timed && <strong className="timer">{minutes}:{seconds}</strong>}</div></header><QuestionHeading problem={current} /><AnswerPanel controller={controller}/><div className="actions">{timed && controller.questionNumber > 1 && <button onClick={() => controller.previous()}>Previous question</button>}<button onClick={submitOrNext} disabled={!controller.hasSubmitted && !controller.canSubmit}>{controller.hasSubmitted ? "Next question" : "Submit answer"} <kbd className="action-shortcut">N</kbd></button><ProgressSummary answered={controller.answeredCount} incorrect={controller.incorrectCount} successRate={controller.successRate} remaining={remaining}/></div></section></main>;
+  return <main className="app"><section className="card quiz-card"><header className="quiz-header"><button onClick={onBack} aria-label="Home"><Icon name="home" />Home</button><div className="quiz-status"><span>Question {current.questionNumber} · {controller.questionNumber} of {controller.totalQuestions}</span>{timed && <QuizProgressBar value={timedRemainingQuestions ?? 0} max={controller.totalQuestions} label={`${timedRemainingQuestions ?? 0} questions remaining`}/>}<QuizProgressBar value={progressValue} max={progressMax} label={progressLabel} showLabel={!timed}/>{timed && <strong className="timer">{minutes}:{seconds}</strong>}</div>{timed && <button onClick={onPause}><Icon name="timer" />Pause</button>}</header><QuestionHeading problem={current} /><AnswerPanel controller={controller}/><div className="actions">{timed && controller.questionNumber > 1 && <button onClick={() => controller.previous()}>Previous question</button>}<button onClick={submitOrNext} disabled={!controller.hasSubmitted && !controller.canSubmit}>{controller.hasSubmitted ? "Next question" : "Submit answer"} <kbd className="action-shortcut">N</kbd></button><button onClick={onRestart}><Icon name="test" />Restart</button><ProgressSummary answered={controller.answeredCount} incorrect={controller.incorrectCount} successRate={controller.successRate} remaining={remaining}/></div></section></main>;
 }
