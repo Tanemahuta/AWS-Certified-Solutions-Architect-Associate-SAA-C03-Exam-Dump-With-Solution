@@ -264,7 +264,7 @@ export function App(): JSX.Element {
     const scaledScore = timed ? (controller as TimedQuizController).scaledScore : scoring.scaledScore(score, total);
     const unscoredCount = timed ? (controller as TimedQuizController).unscoredQuestionCount : 0;
     return controller
-      ? <ResultsView score={score} total={total} scaledScore={scaledScore} maximumScore={scoring.maximumScore} passingScore={scoring.passingScore} unscoredCount={unscoredCount} wrongQuestions={wrongQuestions} questionNumbers={problems.map(problem => problem.questionNumber)} onBack={() => navigate("/home", { replace: true })} />
+      ? <ResultsView onRestart={restart} score={score} total={total} scaledScore={scaledScore} maximumScore={scoring.maximumScore} passingScore={scoring.passingScore} unscoredCount={unscoredCount} wrongQuestions={wrongQuestions} questionNumbers={problems.map(problem => problem.questionNumber)} onBack={() => navigate("/home", { replace: true })} />
       : <Navigate to="/home" replace />;
   };
 

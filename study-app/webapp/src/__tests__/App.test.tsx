@@ -56,7 +56,7 @@ it("opens the renamed all-questions test from the home buttons", async () => {
   expect(screen.getByText(/Question (10|30) · 1 of 2/)).toBeInTheDocument();
 });
 
- it("pauses the timed test in place and resumes the countdown with the play toggle", async () => {
+it("pauses the timed test in place and resumes the countdown with the play toggle", async () => {
   jest.useFakeTimers();
   const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
   await act(async () => { renderApp(); });
@@ -66,14 +66,32 @@ it("opens the renamed all-questions test from the home buttons", async () => {
   await user.click(screen.getByRole("button", { name: "Pause test" }));
   expect(screen.getByRole("button", { name: "Resume test" })).toHaveTextContent("");
   expect(screen.getByRole("status")).toHaveTextContent("Test paused");
-  expect(screen.getByRole("button", { name: /Submit answer/ })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: /Submit answer/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: "Restart" })).not.toBeInTheDocument();
+  expect(screen.getByRole("status")).toHaveClass("error");
+  expect(document.querySelector(".answer-controls")).not.toBeInTheDocument();
   act(() => jest.advanceTimersByTime(5000));
   expect(timer.textContent).toBe(initial);
   await user.keyboard("1n");
-  expect(screen.getByRole("button", { name: /Submit answer/ })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: /Submit answer/ })).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Resume test" }));
   expect(screen.queryByRole("status")).not.toBeInTheDocument();
   act(() => jest.advanceTimersByTime(1000));
   expect(timer.textContent).not.toBe(initial);
   expect(screen.getByRole("button", { name: "Pause test" })).toBeInTheDocument();
+});
+
+it("restarts the same test mode from its completion report", async () => {
+  renderApp("/infinite/1");
+  await screen.findByRole("button", { name: /Submit answer/ });
+  for (let question = 0; question < problems.length; question++) {
+    await userEvent.click(screen.getByRole("button", { name: /^[A-Z]\. A [0-9]$/ }));
+    await userEvent.click(screen.getByRole("button", { name: /Submit answer/ }));
+    const next = screen.queryByRole("button", { name: /Next question/ });
+    if (next) await userEvent.click(next);
+  }
+  expect(screen.getByRole("heading", { name: "Quiz complete" })).toBeInTheDocument();
+  await userEvent.click(screen.getByRole("button", { name: "Restart" }));
+  expect(screen.getByText(/Question (10|30) · 1 of 2/)).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Submit answer/ })).toBeDisabled();
 });
