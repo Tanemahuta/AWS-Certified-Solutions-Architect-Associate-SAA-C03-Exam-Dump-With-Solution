@@ -5,7 +5,7 @@ Welcome to the AWS SAA-C03 Exam Preparation Repository! This repository is desig
 
 ## Contents
 
-- **684 MCQs:** This repository includes 684 multiple-choice questions covering various aspects of the AWS SAA-C03 exam.
+- **781 practice questions:** The bank includes the original 684 questions, 72 original practice scenarios added in October 2026 (including 24 focused on migration and hybrid storage), and twenty-five reworded questions adapted from user-provided material, covering all four SAA-C03 domains.
 
 - **Detailed Solutions:** Each question is accompanied by a detailed solution, providing explanations and insights to help you understand the concepts thoroughly.
 
