@@ -68,3 +68,26 @@ test("a root placeholder displays unpublished and retains embedded navigation wh
   selector.dispatchEvent(new page.document.defaultView.Event("change"));
   assert.deepEqual(page.destinations, ["https://example.github.io/app/feat/a/index.html"]);
 });
+
+
+test("the Git button opens the branch selector and Escape or an outside click dismisses it", () => {
+  const page = preview({ version: "1.4.0", branch: "main" });
+  page.run();
+  const toggle = page.document.querySelector('.deployment-toggle');
+  const menu = page.document.getElementById('deployment-menu');
+  const selector = page.document.querySelector('select');
+  assert.equal(menu.hidden, true);
+  assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+  assert.ok(toggle.querySelector('.mdi-git'));
+  toggle.click();
+  assert.equal(menu.hidden, false);
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  assert.equal(page.document.activeElement, selector);
+  selector.dispatchEvent(new page.document.defaultView.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  assert.equal(menu.hidden, true);
+  assert.equal(page.document.activeElement, toggle);
+  toggle.click();
+  page.document.body.click();
+  assert.equal(menu.hidden, true);
+  assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+});

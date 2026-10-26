@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ResultsView } from "../ResultsView";
 
 function renderResults(scaledScore: number, wrongQuestions: number[] = [], onBack = jest.fn()): void {
-  render(<MemoryRouter><ResultsView score={50} total={65} scaledScore={scaledScore} maximumScore={1000} passingScore={720} unscoredCount={15} wrongQuestions={wrongQuestions} onBack={onBack} /></MemoryRouter>);
+  render(<MemoryRouter><ResultsView score={50} total={65} scaledScore={scaledScore} maximumScore={1000} passingScore={720} unscoredCount={15} wrongQuestions={wrongQuestions} onBack={onBack} onRestart={jest.fn()} /></MemoryRouter>);
 }
 
 describe("ResultsView", () => {
@@ -31,6 +31,6 @@ describe("ResultsView", () => {
 });
 
 it("labels review links with original question numbers while preserving report routes", () => {
-  render(<MemoryRouter><ResultsView score={0} total={2} scaledScore={100} maximumScore={1000} passingScore={720} unscoredCount={0} wrongQuestions={[1]} questionNumbers={[10, 30]} onBack={jest.fn()} /></MemoryRouter>);
+  render(<MemoryRouter><ResultsView score={0} total={2} scaledScore={100} maximumScore={1000} passingScore={720} unscoredCount={0} wrongQuestions={[1]} questionNumbers={[10, 30]} onBack={jest.fn()} onRestart={jest.fn()} /></MemoryRouter>);
   expect(screen.getByRole("link", { name: "Question 30" })).toHaveAttribute("href", "/reports/2");
 });
