@@ -4,6 +4,11 @@
       "name": "main",
       "path": "",
       "published": true
+    },
+    {
+      "name": "fix/questions",
+      "path": "fix/questions/",
+      "published": true
     }
   ]
 }
