@@ -35,8 +35,9 @@ test("embedded data exactly matches the database and its recalculated hash", () 
   assert.deepEqual(JSON.parse(gunzipSync(Buffer.from(encoded, "base64")).toString()), database);
 });
 
-test("all questions 1–684 have readable text and explanations for every option", () => {
-  assert.deepEqual(questions.map(q => q.questionNumber).sort((a, b) => a - b), Array.from({ length: 684 }, (_, i) => i + 1));
+test("question identities remain contiguous as the bank grows, with readable text and explanations", () => {
+  assert.ok(questions.length >= 684, "Keep the original question bank when adding questions");
+  assert.deepEqual(questions.map(q => q.questionNumber).sort((a, b) => a - b), Array.from({ length: questions.length }, (_, i) => i + 1));
   for (const question of questions) {
     assert.match(question.question, /<p>/);
     assert.ok(question.choices.some(choice => choice.correct), `No correct answer in question ${question.questionNumber}`);
@@ -44,6 +45,27 @@ test("all questions 1–684 have readable text and explanations for every option
       assert.ok(choice.solution.trim(), `Empty option in question ${question.questionNumber}`);
       assert.ok(choice.explanation?.trim(), `Missing explanation in question ${question.questionNumber}`);
     }
+  }
+});
+
+test("question prompts are unique after ignoring markup, punctuation, and whitespace", () => {
+  const seen = new Map();
+  for (const question of questions) {
+    const normalized = question.question.replace(/<[^>]*>/g, " ").replace(/[^a-z0-9]/gi, "").toLowerCase();
+    assert.ok(!seen.has(normalized), `Duplicate prompts: ${seen.get(normalized)} and ${question.questionNumber}`);
+    seen.set(normalized, question.questionNumber);
+  }
+});
+
+test("new practice questions have distinct options and unambiguous answer counts", () => {
+  const additions = questions.filter(question => question.questionNumber > 684);
+  assert.ok(additions.length > 0);
+  for (const question of additions) {
+    assert.ok(question.choices.length >= 4);
+    assert.equal(new Set(question.choices.map(choice => choice.solution)).size, question.choices.length);
+    for (const choice of question.choices) assert.equal(typeof choice.correct, "boolean");
+    const expected = /\((?:choose|select) two\.\)/i.test(question.question) ? 2 : 1;
+    assert.equal(question.choices.filter(choice => choice.correct).length, expected, `Answer count for ${question.questionNumber}`);
   }
 });
 

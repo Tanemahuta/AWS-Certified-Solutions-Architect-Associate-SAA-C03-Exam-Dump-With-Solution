@@ -33,6 +33,38 @@ Before bundling, the builder recomputes SHA-512 from its question data (excludin
 updates the stored hash, and compresses the complete database into the single-page app.
 Stored hashes are never trusted or reused; you may leave the hash blank when editing.
 
+The October 2026 refresh adds 72 original practice scenarios (IDs 685–756) with explanations
+for every option. The first 48 add twelve questions per domain. Topics include S3 Express One Zone,
+EFS Elastic throughput, Graviton migration, Aurora Serverless v2 auto-pause, and DynamoDB
+global-table consistency modes.
+The next 24 (IDs 733–756) focus on migration and hybrid storage: eight DataSync scenarios,
+MGN lift and shift, DMS full load and CDC, schema conversion, cutover and validation,
+Storage Gateway, Transfer Family, VM Import/Export, encrypted connectivity, and dependency-aware waves.
+AWS documentation now calls Application Migration Service AWS Transform MGN; the questions
+include the familiar former name when introducing the service.
+These are newly authored study questions, not claims about actual or newly released exam questions.
+The original IDs remain stable to preserve per-question study history.
+Questions 757–781 are reworded adaptations of user-provided scenarios covering RDS IAM database authentication,
+ECS container orchestration, Route 53 zone apex aliases, Lambda execution timeouts,
+Redshift analytics, EC2 Spot purchasing, AWS Config compliance, S3 website DNS prerequisites,
+Kinesis shard scaling, IAM password-policy evaluation, SMB file archival,
+redundant hybrid connectivity, layered network inspection, CloudFormation readiness signals,
+parallel training storage with archival repositories, termination-time log collection,
+S3 activity threat detection, visual data preparation with DataBrew, Aurora reader connections,
+locally cached hybrid volumes, inline VPC perimeter inspection, customer VPN gateways,
+explicit S3 encryption headers, cross-account data lake governance, and io1 capacity limits,
+with explanations for each option.
+
+When incorporating pasted questions, rewrite the scenario and every answer option before adding them.
+Preserve the learning objective and correct answer, and make missing technical assumptions explicit
+so that the answer follows from the scenario. Use fresh phrasing in explanations as well; retain
+official AWS service names and API identifiers where needed for accuracy. When revising an existing
+question, keep its ID and correct-answer positions stable.
+
+For future additions, append unused IDs, include explanations for every option, and run
+`pnpm test` and `pnpm run build`. Content checks reject duplicate prompts and validate
+option uniqueness and answer counts for questions added after the original bank.
+
 Only `webapp/src/generated/`, build output, and coverage reports are ignored by Git.
 Build, development, typecheck, and test commands regenerate the embedded module automatically on a fresh checkout.
 Keep multiline code inside `<code>` markers.

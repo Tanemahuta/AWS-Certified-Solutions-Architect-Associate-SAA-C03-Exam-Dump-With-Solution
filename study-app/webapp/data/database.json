@@ -1,5 +1,5 @@
 {
-  "hash": "d7c99102da7dd6d8502262e43bd78c941b8cda21c88a880617674bd6154c13ad3b353ada496d9a098a469c7beaa6fa22dc02da5e6c1e08259df4d44aee92f5a0",
+  "hash": "73d5644b2e4fb2865a500106f8dab2dd45c681994a3d6550d45c18a7ce807bd7f9dad341ee540f01dc2e039a0358ab7abd647273183f67dc63afb97ba3729b3a",
   "domains": {
     "Design High-Performing Architectures": [
       {
@@ -3233,6 +3233,635 @@
             "explanation": "<p>EBS Snapshot Lock prevents deletion of a locked snapshot without changing the storage administrator's IAM rights. Compliance mode enforces the retention period after any cooling-off interval; governance locks can be removed by authorized users.</p>"
           }
         ]
+      },
+      {
+        "questionNumber": 709,
+        "question": "<p>A small EFS file system supports unpredictable, intensive processing bursts. Bursting throughput exhausts credits, and the team cannot forecast a provisioned throughput level. Which throughput mode best matches this workload?</p>",
+        "choices": [
+          {
+            "solution": "<p>Keep Bursting throughput and add unrelated files solely to increase credits.</p>",
+            "correct": false,
+            "explanation": "<p>Increasing stored data to obtain throughput adds storage and does not directly match unpredictable demand.</p>"
+          },
+          {
+            "solution": "<p>Set Provisioned throughput once and never revisit it.</p>",
+            "correct": false,
+            "explanation": "<p>A fixed throughput setting requires capacity planning and may not follow changing demand.</p>"
+          },
+          {
+            "solution": "<p>Use Elastic throughput.</p>",
+            "correct": true,
+            "explanation": "<p>Elastic throughput adjusts with workload activity instead of depending on burst credits or a manually chosen throughput level.</p>"
+          },
+          {
+            "solution": "<p>Change the security group to allow more NFS connections as the throughput solution.</p>",
+            "correct": false,
+            "explanation": "<p>Network permission changes do not change the file system throughput mode or replenish credits.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 710,
+        "question": "<p>An application needs 200 GiB of SSD storage and higher IOPS than its current general purpose volume provides. The required performance is within gp3 limits and the EC2 instance supports it. The team wants to increase IOPS without buying unused capacity. Which choice fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use gp3 and provision the required IOPS and throughput independently of capacity.</p>",
+            "correct": true,
+            "explanation": "<p>gp3 lets the team configure storage capacity and additional performance separately.</p>"
+          },
+          {
+            "solution": "<p>Increase gp2 capacity because gp3 IOPS must always scale with volume size.</p>",
+            "correct": false,
+            "explanation": "<p>The stated gp3 limitation is incorrect; gp3 performance can be provisioned independently.</p>"
+          },
+          {
+            "solution": "<p>Use an sc1 volume as the instance boot volume.</p>",
+            "correct": false,
+            "explanation": "<p>Cold HDD storage does not fit small random SSD I/O and cannot serve as a boot volume.</p>"
+          },
+          {
+            "solution": "<p>Use S3 Glacier Deep Archive as a directly attached block device.</p>",
+            "correct": false,
+            "explanation": "<p>Deep Archive is object archival storage, not an EBS block device.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 711,
+        "question": "<p>An analytics job repeatedly reads temporary S3 objects and needs consistent single-digit millisecond object access. The job can recreate the objects after an Availability Zone loss. Which storage design is most appropriate?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use S3 Glacier Flexible Retrieval and restore each object before every read.</p>",
+            "correct": false,
+            "explanation": "<p>Restore-based archival access does not meet the low-latency requirement.</p>"
+          },
+          {
+            "solution": "<p>Use S3 One Zone-IA and assume it provides the same latency specialization as S3 Express One Zone.</p>",
+            "correct": false,
+            "explanation": "<p>One Zone-IA targets infrequent access rather than the specialized Express performance requirement.</p>"
+          },
+          {
+            "solution": "<p>Use a general purpose bucket and enable versioning to reduce each read to single-digit milliseconds.</p>",
+            "correct": false,
+            "explanation": "<p>Versioning preserves versions; it does not provide Express One Zone access performance.</p>"
+          },
+          {
+            "solution": "<p>Use an S3 Express One Zone directory bucket in the same Availability Zone as the compute.</p>",
+            "correct": true,
+            "explanation": "<p>Express One Zone targets latency-sensitive object access; regenerable data makes the single-zone tradeoff acceptable.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 712,
+        "question": "<p>A Lambda API creates thousands of short-lived connections to an RDS database during traffic bursts. Connection setup and connection limits are the bottleneck, while query execution has spare capacity. Which managed change directly addresses the bottleneck?</p>",
+        "choices": [
+          {
+            "solution": "<p>Add a read replica and send every write to it.</p>",
+            "correct": false,
+            "explanation": "<p>A read replica does not accept ordinary primary writes or inherently pool client connections.</p>"
+          },
+          {
+            "solution": "<p>Connect the functions through RDS Proxy.</p>",
+            "correct": true,
+            "explanation": "<p>RDS Proxy pools and reuses database connections, reducing connection churn and oversubscription.</p>"
+          },
+          {
+            "solution": "<p>Increase the Lambda timeout without changing connections.</p>",
+            "correct": false,
+            "explanation": "<p>A longer timeout does not reduce connection setup overhead or connection demand.</p>"
+          },
+          {
+            "solution": "<p>Copy database backups to another Region.</p>",
+            "correct": false,
+            "explanation": "<p>Backup copies do not address active database connection pressure.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 713,
+        "question": "<p>A DynamoDB event table uses the current date as its partition key. Writes to that date are throttled despite spare capacity elsewhere. The application can query several keys and merge results. Which design change distributes this hot write workload?</p>",
+        "choices": [
+          {
+            "solution": "<p>Keep the date key and increase only the sort-key length.</p>",
+            "correct": false,
+            "explanation": "<p>A longer sort key does not distribute writes across additional partition-key values.</p>"
+          },
+          {
+            "solution": "<p>Add DAX and leave the write key unchanged.</p>",
+            "correct": false,
+            "explanation": "<p>A read cache does not solve concentrated writes to a hot partition key.</p>"
+          },
+          {
+            "solution": "<p>Append a distributed shard suffix to the date key and query the shards when reading a date.</p>",
+            "correct": true,
+            "explanation": "<p>Write sharding spreads events across partition-key values at the cost of read fan-out.</p>"
+          },
+          {
+            "solution": "<p>Use the same constant partition key for every date.</p>",
+            "correct": false,
+            "explanation": "<p>A constant key concentrates traffic further instead of spreading it.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 714,
+        "question": "<p>A multiplayer service uses UDP and regional Network Load Balancers. Customers require stable public IP addresses, and the team wants global network routing to healthy regional endpoints. Which service fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>AWS Global Accelerator with a standard accelerator and the regional NLB endpoints.</p>",
+            "correct": true,
+            "explanation": "<p>Global Accelerator supports UDP, static entry addresses, and health-based routing over the AWS network.</p>"
+          },
+          {
+            "solution": "<p>CloudFront with an S3 origin.</p>",
+            "correct": false,
+            "explanation": "<p>CloudFront is not a general-purpose UDP accelerator for the game protocol.</p>"
+          },
+          {
+            "solution": "<p>S3 Transfer Acceleration.</p>",
+            "correct": false,
+            "explanation": "<p>Transfer Acceleration accelerates S3 object transfers rather than UDP application sessions.</p>"
+          },
+          {
+            "solution": "<p>An API Gateway REST API configured as a UDP proxy.</p>",
+            "correct": false,
+            "explanation": "<p>A REST API does not provide a general UDP listener for these sessions.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 715,
+        "question": "<p>A Linux HPC cluster needs parallel file access to a dataset stored in S3. The team wants a managed high-performance file system that can associate its namespace with the S3 dataset. Which design meets these needs?</p>",
+        "choices": [
+          {
+            "solution": "<p>Mount S3 Glacier Deep Archive directly as a Lustre file system.</p>",
+            "correct": false,
+            "explanation": "<p>An archival storage class does not expose a directly mounted Lustre file system.</p>"
+          },
+          {
+            "solution": "<p>Use FSx for Windows File Server and require native Linux Lustre clients.</p>",
+            "correct": false,
+            "explanation": "<p>Windows File Server provides SMB rather than the required Lustre interface.</p>"
+          },
+          {
+            "solution": "<p>Use one EBS volume attached across several Availability Zones.</p>",
+            "correct": false,
+            "explanation": "<p>EBS is zonal block storage and does not provide a parallel Lustre namespace.</p>"
+          },
+          {
+            "solution": "<p>Use an S3-linked FSx for Lustre deployment that supports data repository associations.</p>",
+            "correct": true,
+            "explanation": "<p>Supported FSx for Lustre deployments integrate S3 datasets with a high-performance parallel file system.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 716,
+        "question": "<p>A cacheable media catalog is served through CloudFront. Requests from multiple regional caches still create repeated origin fetches for the same popular objects. The team wants an additional shared cache layer to reduce origin load. Which feature should it consider?</p>",
+        "choices": [
+          {
+            "solution": "<p>CloudFront signed cookies.</p>",
+            "correct": false,
+            "explanation": "<p>Signed cookies authorize viewers; they do not add a shared origin-facing cache layer.</p>"
+          },
+          {
+            "solution": "<p>CloudFront Origin Shield.</p>",
+            "correct": true,
+            "explanation": "<p>Origin Shield adds a caching layer that consolidates origin requests from CloudFront caches.</p>"
+          },
+          {
+            "solution": "<p>S3 Object Lock.</p>",
+            "correct": false,
+            "explanation": "<p>Object Lock protects retained object versions rather than reducing origin fetches.</p>"
+          },
+          {
+            "solution": "<p>Disable caching on every cache behavior.</p>",
+            "correct": false,
+            "explanation": "<p>Disabling caches sends more requests to the origin, increasing its load.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 717,
+        "question": "<p>A team is creating a Kinesis Data Stream for a variable workload with well-distributed partition keys. It wants AWS to manage stream capacity instead of manually provisioning shards. The traffic stays within documented on-demand scaling behavior. Which mode fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Provisioned mode with a fixed shard count and no scaling process.</p>",
+            "correct": false,
+            "explanation": "<p>A fixed provisioned shard count does not automatically adapt to changing demand.</p>"
+          },
+          {
+            "solution": "<p>An S3 lifecycle configuration on the stream.</p>",
+            "correct": false,
+            "explanation": "<p>S3 lifecycle policies do not manage Kinesis stream capacity.</p>"
+          },
+          {
+            "solution": "<p>An on-demand capacity mode.</p>",
+            "correct": true,
+            "explanation": "<p>On-demand modes manage capacity for the stream without requiring manual shard provisioning.</p>"
+          },
+          {
+            "solution": "<p>Enhanced fan-out as the sole write-capacity control.</p>",
+            "correct": false,
+            "explanation": "<p>Enhanced fan-out provides dedicated consumer read throughput; it is not a write-capacity mode.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 718,
+        "question": "<p>A latency-sensitive Lambda API has slow cold starts. The team can predict its baseline concurrency and accepts additional cost. Which TWO actions let API traffic use pre-initialized execution environments? (Choose two.)</p>",
+        "choices": [
+          {
+            "solution": "<p>Configure provisioned concurrency on a published function version or alias.</p>",
+            "correct": true,
+            "explanation": "<p>Provisioned concurrency allocates pre-initialized environments for a qualified function version or alias.</p>"
+          },
+          {
+            "solution": "<p>Set reserved concurrency and assume it pre-initializes environments.</p>",
+            "correct": false,
+            "explanation": "<p>Reserved concurrency reserves concurrency capacity but does not itself warm execution environments.</p>"
+          },
+          {
+            "solution": "<p>Configure provisioned concurrency on $LATEST.</p>",
+            "correct": false,
+            "explanation": "<p>Provisioned concurrency is not supported on the unpublished $LATEST version.</p>"
+          },
+          {
+            "solution": "<p>Increase the API timeout as the cold-start solution.</p>",
+            "correct": false,
+            "explanation": "<p>A longer timeout does not eliminate initialization latency.</p>"
+          },
+          {
+            "solution": "<p>Point the API integration at the version or alias that has provisioned concurrency.</p>",
+            "correct": true,
+            "explanation": "<p>Requests must invoke the qualified version or alias to use its provisioned environments.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 719,
+        "question": "<p>An Athena table covers years of S3 data. Most queries request one day, but currently scan the whole dataset. Which change allows the engine to skip unrelated dates?</p>",
+        "choices": [
+          {
+            "solution": "<p>Increase the S3 bucket version count.</p>",
+            "correct": false,
+            "explanation": "<p>Keeping additional versions does not let Athena prune query data by date.</p>"
+          },
+          {
+            "solution": "<p>Encrypt every object with a different KMS key.</p>",
+            "correct": false,
+            "explanation": "<p>Encryption-key selection is unrelated to partition pruning.</p>"
+          },
+          {
+            "solution": "<p>Use SELECT * and remove the date filter.</p>",
+            "correct": false,
+            "explanation": "<p>Removing the predicate prevents date-based pruning and can increase scanning.</p>"
+          },
+          {
+            "solution": "<p>Organize and register date partitions, and include the partition key in query predicates.</p>",
+            "correct": true,
+            "explanation": "<p>Partition metadata and matching predicates let Athena restrict the scan to the requested dates.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 720,
+        "question": "<p>An ECS service uses rolling deployments behind an ALB. Request count per task predicts load better than CPU utilization. The team wants managed scaling around a chosen request-per-target value. Which policy should it configure?</p>",
+        "choices": [
+          {
+            "solution": "<p>A scheduled policy with no relation to actual traffic.</p>",
+            "correct": false,
+            "explanation": "<p>A schedule cannot follow unpredictable changes in current request load.</p>"
+          },
+          {
+            "solution": "<p>ECS Service Auto Scaling target tracking with ALBRequestCountPerTarget.</p>",
+            "correct": true,
+            "explanation": "<p>Target tracking adjusts task count to keep the selected per-target request metric near its target.</p>"
+          },
+          {
+            "solution": "<p>An S3 lifecycle rule tied to the ALB target group.</p>",
+            "correct": false,
+            "explanation": "<p>Lifecycle rules manage S3 objects rather than ECS task counts.</p>"
+          },
+          {
+            "solution": "<p>A policy based only on total requests without accounting for task count.</p>",
+            "correct": false,
+            "explanation": "<p>Total requests alone do not express the intended per-task utilization target.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 733,
+        "question": "<p>A company must migrate an on-premises NFS archive to S3 over an existing network connection. It wants managed transfer execution instead of maintaining copy scripts. Which design provides the appropriate source connectivity?</p>",
+        "choices": [
+          {
+            "solution": "<p>Install a DMS replication instance and point it at the NFS export.</p>",
+            "correct": false,
+            "explanation": "<p>DMS migrates supported database data; it does not mount a general NFS export as its source.</p>"
+          },
+          {
+            "solution": "<p>Deploy a DataSync agent with access to the NFS export, create NFS and S3 locations, and run a transfer task.</p>",
+            "correct": true,
+            "explanation": "<p>The agent mounts the NFS source and DataSync transfers the files to the configured S3 destination.</p>"
+          },
+          {
+            "solution": "<p>Enable S3 Cross-Region Replication on the on-premises NFS server.</p>",
+            "correct": false,
+            "explanation": "<p>S3 replication operates between S3 buckets, not directly from an NFS server.</p>"
+          },
+          {
+            "solution": "<p>Use an S3 lifecycle transition to discover and upload the local files.</p>",
+            "correct": false,
+            "explanation": "<p>Lifecycle rules act on existing S3 objects and do not ingest an external file system.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 735,
+        "question": "<p>A DataSync task is migrating an NFS dataset to EFS. The destination location uses a VPC subnet and security groups, but transfer attempts cannot mount the file system. Which check most directly addresses destination connectivity?</p>",
+        "choices": [
+          {
+            "solution": "<p>Verify reachability to an EFS mount target and permit NFS traffic between the DataSync network interfaces and mount target.</p>",
+            "correct": true,
+            "explanation": "<p>DataSync mounts EFS over the VPC network; routes and security groups must permit the NFS connection.</p>"
+          },
+          {
+            "solution": "<p>Assign a public IP address to the EFS file system.</p>",
+            "correct": false,
+            "explanation": "<p>EFS file systems do not use a public IP as the solution for VPC mount-target connectivity.</p>"
+          },
+          {
+            "solution": "<p>Enable S3 Transfer Acceleration on EFS.</p>",
+            "correct": false,
+            "explanation": "<p>Transfer Acceleration is an S3 feature and does not enable EFS mounts.</p>"
+          },
+          {
+            "solution": "<p>Replace the EFS file-system ID with the source NFS hostname.</p>",
+            "correct": false,
+            "explanation": "<p>The destination location must identify and reach the actual EFS file system.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 742,
+        "question": "<p>A supported Oracle workload is moving to Aurora PostgreSQL. The team needs to assess and convert schema and procedural code, then replicate table data with minimal downtime. Which approach addresses these separate needs?</p>",
+        "choices": [
+          {
+            "solution": "<p>Restore an Oracle physical backup directly into Aurora PostgreSQL.</p>",
+            "correct": false,
+            "explanation": "<p>Physical database backups are not directly portable between these different engines.</p>"
+          },
+          {
+            "solution": "<p>Use DMS data replication alone and assume all Oracle procedural code becomes PostgreSQL code.</p>",
+            "correct": false,
+            "explanation": "<p>Data replication does not replace assessment and conversion of engine-specific schema and code.</p>"
+          },
+          {
+            "solution": "<p>Use DataSync to rename Oracle database files with a PostgreSQL extension.</p>",
+            "correct": false,
+            "explanation": "<p>Renaming files cannot convert database storage formats or procedural code.</p>"
+          },
+          {
+            "solution": "<p>Use DMS Schema Conversion, resolve conversion action items, and use DMS for the data migration.</p>",
+            "correct": true,
+            "explanation": "<p>Schema conversion handles supported objects and reports required work; DMS can then move the data.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 751,
+        "question": "<p>A DataSync migration shares a network connection with business applications. Transfers are saturating the link during working hours. The selected task configuration supports bandwidth limits. Which control directly limits migration traffic?</p>",
+        "choices": [
+          {
+            "solution": "<p>Set a DataSync task or task-execution bandwidth limit and adjust it for the transfer window.</p>",
+            "correct": true,
+            "explanation": "<p>A bandwidth limit caps the task transfer rate so it can share the network with other traffic.</p>"
+          },
+          {
+            "solution": "<p>Set an S3 object expiration policy.</p>",
+            "correct": false,
+            "explanation": "<p>Object expiration controls retention rather than network transfer rate.</p>"
+          },
+          {
+            "solution": "<p>Increase the source file count without changing transfer settings.</p>",
+            "correct": false,
+            "explanation": "<p>More files do not provide a predictable network bandwidth cap.</p>"
+          },
+          {
+            "solution": "<p>Disable encryption to reserve bandwidth for business applications.</p>",
+            "correct": false,
+            "explanation": "<p>Removing encryption is not the appropriate bandwidth-control mechanism.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 754,
+        "question": "<p>A company has a supported exported VM image for a non-production appliance. A long outage is acceptable, and continuous replication is unnecessary. It wants to import the image into an EC2 machine image and launch the appliance. Which capability fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>DMS Schema Conversion.</p>",
+            "correct": false,
+            "explanation": "<p>Database schema conversion does not import an operating-system VM image.</p>"
+          },
+          {
+            "solution": "<p>S3 Cross-Region Replication alone.</p>",
+            "correct": false,
+            "explanation": "<p>Copying an image file between buckets does not convert it into an EC2 machine image.</p>"
+          },
+          {
+            "solution": "<p>CloudFront Origin Shield.</p>",
+            "correct": false,
+            "explanation": "<p>An origin cache does not import virtual machine images.</p>"
+          },
+          {
+            "solution": "<p>VM Import/Export, after checking image, operating-system, and licensing prerequisites.</p>",
+            "correct": true,
+            "explanation": "<p>VM Import/Export supports importing eligible VM images for use with EC2.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 758,
+        "question": "<p>A software team packages its Node.js API and Angular frontend as Docker workloads, with MongoDB providing persistence. It needs a managed container scheduler to maintain the desired number of tasks and place them across a cluster. The scheduler must work with load balancing, automatic scaling, and operational metrics. Which AWS service supplies this orchestration layer?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use Compute Optimizer recommendations to run and distribute the containers.</p>",
+            "correct": false,
+            "explanation": "<p>Compute Optimizer recommends resource changes from utilization data; it does not operate a container scheduler.</p>"
+          },
+          {
+            "solution": "<p>Use CloudFormation as the application container scheduler.</p>",
+            "correct": false,
+            "explanation": "<p>CloudFormation creates and updates infrastructure. A container runtime service must still maintain tasks and schedule their placement.</p>"
+          },
+          {
+            "solution": "<p>Deploy through the Elastic Beanstalk application environment abstraction.</p>",
+            "correct": false,
+            "explanation": "<p>Beanstalk supports Docker deployment and can use ECS underneath. The question specifically asks for the cluster task orchestration layer rather than the higher-level application deployment environment.</p>"
+          },
+          {
+            "solution": "<p>Run the workloads as Amazon ECS tasks and services.</p>",
+            "correct": true,
+            "explanation": "<p>ECS places and manages container tasks and integrates with Elastic Load Balancing, Service Auto Scaling, and CloudWatch. Those integrations need appropriate configuration; a new cluster does not enable them all automatically.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 761,
+        "question": "<p>A travel marketplace collects several terabytes of reservations and customer activity. Analysts need to join datasets, aggregate trends, and explore new SQL queries for business reporting. A separate ingestion pipeline keeps the analytical data fresh. Which managed data store is best suited to this workload?</p>",
+        "choices": [
+          {
+            "solution": "<p>Store the history in DynamoDB and use its key-based queries as the primary reporting engine.</p>",
+            "correct": false,
+            "explanation": "<p>DynamoDB excels at scalable key-value and document access. Broad analytical joins and exploratory aggregations call for a warehouse among these options.</p>"
+          },
+          {
+            "solution": "<p>Load the reporting datasets into an Amazon Redshift warehouse.</p>",
+            "correct": true,
+            "explanation": "<p>Redshift uses columnar storage and parallel execution for large analytical SQL workloads. Its warehouse model suits historical reporting and exploration across substantial datasets.</p>"
+          },
+          {
+            "solution": "<p>Keep the full reporting dataset in ElastiCache as the analytics warehouse.</p>",
+            "correct": false,
+            "explanation": "<p>An in-memory store can accelerate application access, but it is not the appropriate analytical SQL warehouse for this reporting requirement.</p>"
+          },
+          {
+            "solution": "<p>Use a general-purpose Amazon RDS instance as the dedicated large-scale analytics platform.</p>",
+            "correct": false,
+            "explanation": "<p>RDS supports relational queries, including reporting. Redshift is the stronger fit for this warehouse workload, while ordinary RDS instances commonly serve transactional applications.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 765,
+        "question": "<p>A provisioned Kinesis Data Stream feeds events to Lambda. Producers use many partition keys that distribute traffic evenly, but increased event volume now exceeds the aggregate shard capacity. Write throttling and consumer lag are rising. Which change directly expands capacity while keeping the existing stream architecture?</p>",
+        "choices": [
+          {
+            "solution": "<p>Combine existing shards with MergeShard to reduce their total number.</p>",
+            "correct": false,
+            "explanation": "<p>Combining shards scales the stream in and reduces aggregate capacity. That moves in the wrong direction when evenly distributed traffic already exceeds capacity.</p>"
+          },
+          {
+            "solution": "<p>Swap the stream for Firehose without changing the consumer design.</p>",
+            "correct": false,
+            "explanation": "<p>Firehose is a delivery service with different integration and buffering behavior. Replacing the stream is not a direct capacity increase for the existing processing design.</p>"
+          },
+          {
+            "solution": "<p>Request a higher target shard count through UpdateShardCount.</p>",
+            "correct": true,
+            "explanation": "<p>More shards increase aggregate provisioned throughput and permit greater parallel processing when traffic is well distributed. UpdateShardCount applies to provisioned streams, not on-demand streams. A single hot partition key would require separate attention to key design.</p>"
+          },
+          {
+            "solution": "<p>Attach a native step scaling policy directly to the stream configuration.</p>",
+            "correct": false,
+            "explanation": "<p>Kinesis Data Streams does not expose this as a native stream scaling policy. Custom automation can invoke scaling APIs, including UpdateShardCount.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 771,
+        "question": "<p>A quantitative research team trains prediction models on a Linux compute cluster. Many workers must read training files simultaneously through a high-throughput parallel file system. Datasets no longer used for training should remain in a durable object repository, with lifecycle transitions to archival storage when appropriate.</p><p>Which pairing best provides the active training file system and the long-term data repository?</p>",
+        "choices": [
+          {
+            "solution": "<p>Process training files on FSx for Lustre and retain inactive datasets on EBS io1 volumes.</p>",
+            "correct": false,
+            "explanation": "<p>Lustre fits parallel processing, but provisioned-IOPS block volumes are not the requested durable object repository or a suitable cost-focused archival tier.</p>"
+          },
+          {
+            "solution": "<p>Use FSx for Windows File Server for the training workspace and S3 for retained datasets.</p>",
+            "correct": false,
+            "explanation": "<p>S3 fits object retention, but Windows File Server exposes SMB storage rather than the specialized Linux parallel file system suited to this compute workload.</p>"
+          },
+          {
+            "solution": "<p>Use an S3-linked FSx for Lustre file system for active jobs and S3 storage classes for retained data.</p>",
+            "correct": true,
+            "explanation": "<p>Lustre provides a high-performance parallel file interface for concurrent Linux training workers. Supported FSx for Lustre deployments can link to S3 data repositories. Choose S3 storage classes and lifecycle rules according to retrieval needs; selecting S3 alone does not automatically archive objects. FSx for Lustre Intelligent-Tiering file systems do not support S3 repository associations.</p>"
+          },
+          {
+            "solution": "<p>Serve the active workspace through EFS and retain older data in S3.</p>",
+            "correct": false,
+            "explanation": "<p>EFS supports shared NFS access and can serve machine-learning workloads. Among these options, Lustre is the more specific match for the requested parallel HPC file system with native S3 repository integration.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 774,
+        "question": "<p>A logistics analytics team keeps source datasets as Parquet objects in S3. Business users need to remove invalid records, normalize timestamps, and produce grouped summaries without writing SQL or application code. They also need built-in dataset profiling and lineage, plus a versioned sequence of preparation steps that colleagues can review and reuse. Prepared outputs must return to S3.</p><p>Which approach most directly provides this visual data-preparation workflow?</p>",
+        "choices": [
+          {
+            "solution": "<p>Design Glue Studio jobs, add Redshift ML to produce the grouped summaries, and share the job definitions.</p>",
+            "correct": false,
+            "explanation": "<p>Glue Studio supports visual ETL, but Redshift ML trains and invokes predictive models; it is unnecessary for ordinary grouped summaries. This combination adds services instead of directly supplying the requested preparation, profiling, lineage, and reusable recipe workflow.</p>"
+          },
+          {
+            "solution": "<p>Prepare the datasets in Glue DataBrew, publish reusable recipe versions, and run profiling and recipe jobs.</p>",
+            "correct": true,
+            "explanation": "<p>DataBrew provides visual transformations and dataset profiling, with lineage showing relationships among its resources and data outputs. Published recipes preserve ordered preparation steps that authorized colleagues can inspect, export, and reuse. Recipe jobs apply the steps to datasets and can write the results to S3.</p>"
+          },
+          {
+            "solution": "<p>Write Athena transformation statements and distribute the saved SQL to the analysts.</p>",
+            "correct": false,
+            "explanation": "<p>Athena can transform S3 data through SQL, but authoring statements conflicts with the no-SQL requirement. Sharing queries alone does not supply the requested integrated visual preparation and profiling workflow.</p>"
+          },
+          {
+            "solution": "<p>Create Spark transformations on EMR and use EMR Studio notebooks as the shared documentation.</p>",
+            "correct": false,
+            "explanation": "<p>EMR and notebooks can support sophisticated data processing, but implementing Spark transformations requires code and additional execution-environment decisions. This is not the most direct fit for the business-user preparation requirement.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 775,
+        "question": "<p>A restaurant-ordering service runs its containers on ECS with Fargate and stores transactions in Aurora. Two healthy Aurora Replicas have been added to handle growing read demand. The application can separate read-only sessions from writes and establish multiple database connections.</p><p>Which configuration uses Aurora native connection balancing to spread new read-only sessions across the replicas without operating an additional load balancer?</p>",
+        "choices": [
+          {
+            "solution": "<p>Register the replica database addresses behind a separately managed Network Load Balancer.</p>",
+            "correct": false,
+            "explanation": "<p>An additional NLB introduces target and failover management that Aurora already handles through its reader endpoint. It is unnecessary for the requested native replica connection balancing.</p>"
+          },
+          {
+            "solution": "<p>Point the application read-only connection configuration at the Aurora reader endpoint.</p>",
+            "correct": true,
+            "explanation": "<p>When replicas are available, the reader endpoint distributes new connections among them. It does not move individual queries between replicas within an established session or guarantee an equal query count. Long-lived connections, connection pooling, and uneven query costs can produce unequal workload distribution.</p>"
+          },
+          {
+            "solution": "<p>Send read-only sessions to the default Aurora cluster writer endpoint.</p>",
+            "correct": false,
+            "explanation": "<p>The default cluster endpoint connects to the current writer. It supports read and write operations there but does not spread connections across the read replicas.</p>"
+          },
+          {
+            "solution": "<p>Turn on Aurora Parallel Query to distribute application connections between the replicas.</p>",
+            "correct": false,
+            "explanation": "<p>Parallel Query accelerates supported queries by pushing processing into the storage layer. It is not a mechanism for choosing which replica receives a client connection.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 781,
+        "question": "<p>A latency-sensitive transaction processor on EC2 uses 10 GiB EBS io1 volumes. The team must keep that volume type and capacity unchanged while provisioning the highest supported IOPS among the proposed settings. The EC2 instance has sufficient EBS bandwidth, and the workload issues small random I/O requests.</p><p>Which configuration maximizes valid provisioned IOPS while avoiding an excessive backlog of pending operations?</p>",
+        "choices": [
+          {
+            "solution": "<p>Provision 500 IOPS per volume and tune request concurrency to keep queuing low without starving the device.</p>",
+            "correct": true,
+            "explanation": "<p>io1 supports at most 50 provisioned IOPS per GiB, so a 10 GiB volume supports 10 × 50 = 500 IOPS. Avoiding excessive queued requests helps latency, but the application still needs enough outstanding I/O to use the available performance. Optimal queue depth depends on workload measurements; it is not a universal fixed setting.</p>"
+          },
+          {
+            "solution": "<p>Provision 400 IOPS per volume and maintain a short pending-request queue.</p>",
+            "correct": false,
+            "explanation": "<p>400 IOPS is valid for this capacity but leaves supported performance unused. The requirement asks for the highest valid provisioned IOPS without changing the volume size or type.</p>"
+          },
+          {
+            "solution": "<p>Request 800 IOPS per 10 GiB volume and limit the outstanding requests.</p>",
+            "correct": false,
+            "explanation": "<p>This requires 80 IOPS per GiB, exceeding the io1 limit of 50. A shorter queue cannot make an unsupported provisioning ratio valid.</p>"
+          },
+          {
+            "solution": "<p>Configure 600 IOPS per volume and deliberately build a large I/O queue.</p>",
+            "correct": false,
+            "explanation": "<p>600 IOPS exceeds the limit for a 10 GiB io1 volume. A sustained backlog also increases waiting time rather than solving a latency-sensitive workload problem.</p>"
+          }
+        ]
       }
     ],
     "Design Secure Architectures": [
@@ -4166,7 +4795,7 @@
       },
       {
         "questionNumber": 109,
-        "question": "<p>A company needs to store data in Amazon S3 and must prevent the data from being changed. The company wants new objects that are uploaded to Amazon S3 to remain unchangeable for a nonspecific amount of time until the company decides to modify the objects.</p><p>Only specific users in the company's AWS account can have the ability 10 delete the objects.</p><p>What should a solutions architect do to meet these requirements?</p>",
+        "question": "<p>A company needs to store data in Amazon S3 and must prevent the data from being changed. The company wants new objects that are uploaded to Amazon S3 to remain unchangeable for a nonspecific amount of time until the company decides to modify the objects.</p><p>Only specific users in the company's AWS account can have the ability to delete the objects.</p><p>What should a solutions architect do to meet these requirements?</p>",
         "choices": [
           {
             "solution": "<p>Create an S3 Glacier vault. Apply a write-once, read-many (WORM) vault lock policy to the objects.</p>",
@@ -8493,6 +9122,661 @@
             "solution": "<p>Deploy the applications in AWS Wavelength Zones by extending the company's VPC from eu-central-1 to the chosen Wavelength Zone.</p>",
             "correct": false,
             "explanation": "<p>Wavelength is designed for applications at participating mobile-carrier 5G edges, not a general low-latency local deployment for the company's location.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 685,
+        "question": "<p>A publisher serves documents through CloudFront from a regular S3 bucket encrypted with a customer managed KMS key. Direct S3 access must remain blocked. The distribution must retrieve objects using signed origin requests. Which configuration meets these requirements?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use an S3 website endpoint with origin access control.</p>",
+            "correct": false,
+            "explanation": "<p>S3 website endpoints are custom origins and do not support OAC authentication.</p>"
+          },
+          {
+            "solution": "<p>Use origin access control with request signing, a distribution-scoped bucket policy, and a KMS key policy permitting the distribution to decrypt.</p>",
+            "correct": true,
+            "explanation": "<p>OAC signs origin requests; the bucket and KMS policies authorize this distribution to retrieve encrypted objects.</p>"
+          },
+          {
+            "solution": "<p>Allow public S3 reads and restrict the CloudFront viewer protocol to HTTPS.</p>",
+            "correct": false,
+            "explanation": "<p>Viewer HTTPS does not prevent clients from bypassing CloudFront and reading the public bucket.</p>"
+          },
+          {
+            "solution": "<p>Grant the CloudFront service principal access in the bucket policy but leave the KMS key policy unchanged.</p>",
+            "correct": false,
+            "explanation": "<p>S3 permission alone does not authorize decryption with the customer managed KMS key.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 686,
+        "question": "<p>A central account collects uploads from partner AWS accounts in an S3 bucket. The central team must own every uploaded object and manage access through policies without per-object ACLs. Which bucket setting meets these requirements?</p>",
+        "choices": [
+          {
+            "solution": "<p>Object writer ownership.</p>",
+            "correct": false,
+            "explanation": "<p>Object writer ownership leaves ownership with the uploading account and keeps ACLs enabled.</p>"
+          },
+          {
+            "solution": "<p>Bucket owner preferred ownership without requiring any upload ACL.</p>",
+            "correct": false,
+            "explanation": "<p>Bucket owner preferred does not unconditionally transfer ownership of every upload.</p>"
+          },
+          {
+            "solution": "<p>S3 Versioning.</p>",
+            "correct": false,
+            "explanation": "<p>Versioning preserves object versions but does not determine ownership or disable ACLs.</p>"
+          },
+          {
+            "solution": "<p>Bucket owner enforced Object Ownership.</p>",
+            "correct": true,
+            "explanation": "<p>Bucket owner enforced disables ACLs and makes the bucket owner the owner of all objects.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 687,
+        "question": "<p>A company uses an external workforce identity provider and AWS Organizations. Engineers need centrally assigned access to several AWS accounts with temporary sessions. The company wants to manage account access through groups instead of individual IAM users. Which solution fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Connect the identity provider to IAM Identity Center and assign groups to accounts through permission sets.</p>",
+            "correct": true,
+            "explanation": "<p>Identity Center integrates workforce identities and centrally assigns role-based account access using permission sets.</p>"
+          },
+          {
+            "solution": "<p>Create matching IAM users and access keys in every member account.</p>",
+            "correct": false,
+            "explanation": "<p>Duplicated users and long-lived credentials do not provide the requested centralized temporary access.</p>"
+          },
+          {
+            "solution": "<p>Use Amazon Cognito user pools as the AWS account permission-set manager.</p>",
+            "correct": false,
+            "explanation": "<p>Cognito user pools authenticate application users; they do not manage Identity Center account permission sets.</p>"
+          },
+          {
+            "solution": "<p>Use one IAM user in the management account and distribute its credentials.</p>",
+            "correct": false,
+            "explanation": "<p>Shared credentials remove individual accountability and do not provide federated group assignments.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 688,
+        "question": "<p>A monitoring vendor assumes customer roles from one AWS account. A company must prevent another customer from causing the vendor to assume its role. Which trust-policy design addresses this confused deputy risk?</p>",
+        "choices": [
+          {
+            "solution": "<p>Trust every AWS account and require an unpredictable role name.</p>",
+            "correct": false,
+            "explanation": "<p>A role name is not an authorization boundary and does not bind requests to the correct customer.</p>"
+          },
+          {
+            "solution": "<p>Create an access key for the vendor and rotate it annually.</p>",
+            "correct": false,
+            "explanation": "<p>Long-lived credentials do not provide the customer-specific role-assumption condition.</p>"
+          },
+          {
+            "solution": "<p>Trust the vendor account and require the vendor-provided customer-specific sts:ExternalId.</p>",
+            "correct": true,
+            "explanation": "<p>The external ID lets the vendor associate each AssumeRole request with the intended customer.</p>"
+          },
+          {
+            "solution": "<p>Require the vendor to provide the company account ID as a session name.</p>",
+            "correct": false,
+            "explanation": "<p>A session name is not a substitute for validating the customer-specific external ID.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 689,
+        "question": "<p>An application role in account B must decrypt ciphertext directly with a customer managed KMS key in account A. No grants or explicit denies exist. Which TWO permissions are required? (Choose two.)</p>",
+        "choices": [
+          {
+            "solution": "<p>Allow the external role or its account to use kms:Decrypt in the key policy in account A.</p>",
+            "correct": true,
+            "explanation": "<p>The key-owning account must authorize the external principal through the KMS key policy.</p>"
+          },
+          {
+            "solution": "<p>Allow kms:Decrypt on the key ARN in an IAM policy for the application role in account B.</p>",
+            "correct": true,
+            "explanation": "<p>Cross-account use also requires an identity policy authorizing the operation in the caller account.</p>"
+          },
+          {
+            "solution": "<p>Give the role kms:ListKeys on every key in account B.</p>",
+            "correct": false,
+            "explanation": "<p>Listing local keys does not authorize decryption with a key in another account.</p>"
+          },
+          {
+            "solution": "<p>Create a KMS alias in account B with the same name as the key alias in account A.</p>",
+            "correct": false,
+            "explanation": "<p>Alias names do not transfer cross-account key permissions.</p>"
+          },
+          {
+            "solution": "<p>Give the role permission to schedule deletion of the key.</p>",
+            "correct": false,
+            "explanation": "<p>Key deletion permission is unrelated to decrypting ciphertext.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 690,
+        "question": "<p>A reporting bucket must accept application requests only through one approved S3 gateway endpoint. The role already has read permission. The restriction must also block reads made with that role through public S3 endpoints. Which control enforces the network restriction?</p>",
+        "choices": [
+          {
+            "solution": "<p>Add another IAM Allow statement for s3:GetObject.</p>",
+            "correct": false,
+            "explanation": "<p>An additional allow does not exclude requests arriving through other network paths.</p>"
+          },
+          {
+            "solution": "<p>Use an endpoint policy that allows the reporting bucket and make no bucket-policy change.</p>",
+            "correct": false,
+            "explanation": "<p>The endpoint policy governs traffic using that endpoint; it does not block alternate paths.</p>"
+          },
+          {
+            "solution": "<p>Enable S3 Transfer Acceleration.</p>",
+            "correct": false,
+            "explanation": "<p>Transfer Acceleration changes the transfer path and does not enforce the approved endpoint.</p>"
+          },
+          {
+            "solution": "<p>Add a bucket-policy explicit Deny for object reads when aws:SourceVpce is not the approved endpoint ID.</p>",
+            "correct": true,
+            "explanation": "<p>A resource-policy deny prevents otherwise authorized reads through unapproved paths, including public endpoints.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 691,
+        "question": "<p>A laboratory must preserve each original S3 object version for seven years. During retention, even account administrators must be unable to shorten the retention period or permanently delete a protected version. Which control meets this requirement?</p>",
+        "choices": [
+          {
+            "solution": "<p>S3 Versioning without Object Lock.</p>",
+            "correct": false,
+            "explanation": "<p>Versioning alone does not prevent an authorized administrator from deleting individual versions.</p>"
+          },
+          {
+            "solution": "<p>S3 Object Lock in compliance mode with a seven-year retention period.</p>",
+            "correct": true,
+            "explanation": "<p>Compliance retention prevents protected versions from being deleted or having retention shortened, including by the root user.</p>"
+          },
+          {
+            "solution": "<p>S3 Object Lock in governance mode with bypass permission for administrators.</p>",
+            "correct": false,
+            "explanation": "<p>Authorized principals can bypass governance protection, contrary to the requirement.</p>"
+          },
+          {
+            "solution": "<p>An S3 lifecycle rule that expires objects after seven years.</p>",
+            "correct": false,
+            "explanation": "<p>An expiration rule schedules deletion; it does not stop earlier manual deletion.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 692,
+        "question": "<p>A security team needs immutable AWS Backup recovery points. After a review grace period, no administrator should be able to remove the lock or delete recovery points before their configured retention expires. Which solution meets these requirements?</p>",
+        "choices": [
+          {
+            "solution": "<p>Disable backup notifications.</p>",
+            "correct": false,
+            "explanation": "<p>Notifications do not control deletion or retention of recovery points.</p>"
+          },
+          {
+            "solution": "<p>Use Vault Lock governance mode and give administrators permission to remove it.</p>",
+            "correct": false,
+            "explanation": "<p>Governance mode can be removed by authorized users.</p>"
+          },
+          {
+            "solution": "<p>Configure Backup Vault Lock compliance mode with suitable retention limits and let the grace period expire.</p>",
+            "correct": true,
+            "explanation": "<p>After the grace period, compliance-mode protection prevents changing the lock and deleting retained recovery points.</p>"
+          },
+          {
+            "solution": "<p>Tag the vault as immutable and restrict console access only.</p>",
+            "correct": false,
+            "explanation": "<p>Tags and console restrictions do not prevent deletion through authorized API requests.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 693,
+        "question": "<p>Administrators need shell access to private EC2 instances that have no public IP addresses, NAT gateway, or inbound SSH rules. SSM Agent and the instance permissions are configured. Which solution provides managed sessions over private connectivity?</p>",
+        "choices": [
+          {
+            "solution": "<p>Create the required Systems Manager interface VPC endpoints and allow the agent HTTPS access to them; use Session Manager.</p>",
+            "correct": true,
+            "explanation": "<p>PrivateLink endpoints provide private connectivity for the agent without inbound SSH or internet egress.</p>"
+          },
+          {
+            "solution": "<p>Add an internet gateway without assigning public addresses or changing routes.</p>",
+            "correct": false,
+            "explanation": "<p>An internet gateway alone does not provide private instances with the required service connectivity.</p>"
+          },
+          {
+            "solution": "<p>Create an S3 gateway endpoint as the only endpoint.</p>",
+            "correct": false,
+            "explanation": "<p>An S3 endpoint does not provide the Systems Manager control and session channels.</p>"
+          },
+          {
+            "solution": "<p>Open port 22 to the internet and connect to each instance private address.</p>",
+            "correct": false,
+            "explanation": "<p>Private addresses are not internet-routable, and inbound SSH violates the requirement.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 694,
+        "question": "<p>A member account is covered by SCPs that allow S3 actions. A new IAM role has no identity policies or resource-policy grants. Its ListBuckets request fails. No explicit deny exists. What should the architect do?</p>",
+        "choices": [
+          {
+            "solution": "<p>Move the role to the Organizations management account.</p>",
+            "correct": false,
+            "explanation": "<p>Moving accounts is unnecessary; the role needs an applicable permission grant.</p>"
+          },
+          {
+            "solution": "<p>Add an identical S3 Allow statement to the SCP again.</p>",
+            "correct": false,
+            "explanation": "<p>Repeating an SCP allow does not grant permissions to the role.</p>"
+          },
+          {
+            "solution": "<p>Disable CloudTrail because it blocks unapproved API calls.</p>",
+            "correct": false,
+            "explanation": "<p>CloudTrail records activity; it is not the missing permission grant.</p>"
+          },
+          {
+            "solution": "<p>Grant the role the necessary S3 action in an IAM policy within the SCP limits.</p>",
+            "correct": true,
+            "explanation": "<p>SCPs define maximum permissions; an identity or applicable resource policy must grant access.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 695,
+        "question": "<p>A public application behind an ALB receives abusive requests to /login. The team wants to rate limit requests by source IP only for that path while leaving other paths unaffected by this rule. Which control should it use?</p>",
+        "choices": [
+          {
+            "solution": "<p>An ALB security group rule that counts HTTP requests per path.</p>",
+            "correct": false,
+            "explanation": "<p>Security groups filter network traffic and do not inspect paths or count HTTP requests.</p>"
+          },
+          {
+            "solution": "<p>An AWS WAF rate-based rule aggregated by source IP with a scope-down statement for /login.</p>",
+            "correct": true,
+            "explanation": "<p>The scope-down condition selects login requests, and the rate-based rule limits each IP aggregate.</p>"
+          },
+          {
+            "solution": "<p>A network ACL rule matching the /login URL.</p>",
+            "correct": false,
+            "explanation": "<p>Network ACLs cannot match application-layer URL paths.</p>"
+          },
+          {
+            "solution": "<p>An S3 bucket policy using a request-rate condition.</p>",
+            "correct": false,
+            "explanation": "<p>A bucket policy does not govern HTTP requests to the application ALB.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 696,
+        "question": "<p>A Secrets Manager rotation Lambda function runs in private subnets with no internet egress. It can reach its RDS database but times out when calling the regional Secrets Manager API. Its IAM permissions are correct. Which change provides private API connectivity?</p>",
+        "choices": [
+          {
+            "solution": "<p>Add an S3 gateway endpoint.</p>",
+            "correct": false,
+            "explanation": "<p>An S3 gateway endpoint does not route Secrets Manager API calls.</p>"
+          },
+          {
+            "solution": "<p>Increase the database connection timeout.</p>",
+            "correct": false,
+            "explanation": "<p>The failed connection is to Secrets Manager, not the database.</p>"
+          },
+          {
+            "solution": "<p>Create a Secrets Manager interface endpoint with private DNS and permit HTTPS through its security group.</p>",
+            "correct": true,
+            "explanation": "<p>The interface endpoint routes regional Secrets Manager calls privately without NAT or public addresses.</p>"
+          },
+          {
+            "solution": "<p>Store an IAM access key in the function environment.</p>",
+            "correct": false,
+            "explanation": "<p>Credentials do not create a network path to the service API.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 734,
+        "question": "<p>A Windows file share is moving to FSx for Windows File Server using a supported DataSync task. The migration must preserve supported Windows file permissions. What should the team configure and validate?</p>",
+        "choices": [
+          {
+            "solution": "<p>Anonymous source access and no metadata handling.</p>",
+            "correct": false,
+            "explanation": "<p>Anonymous access does not provide the permissions required to read and preserve security metadata.</p>"
+          },
+          {
+            "solution": "<p>S3 object ACLs as a replacement for every NTFS access-control entry.</p>",
+            "correct": false,
+            "explanation": "<p>S3 object ACLs do not reproduce Windows file-system security semantics on the FSx destination.</p>"
+          },
+          {
+            "solution": "<p>A file-name-only comparison and no checks of destination permissions.</p>",
+            "correct": false,
+            "explanation": "<p>Matching names does not show that the required file permissions were migrated.</p>"
+          },
+          {
+            "solution": "<p>Authenticated SMB access with the required security-descriptor permissions and the appropriate DataSync metadata settings.</p>",
+            "correct": true,
+            "explanation": "<p>Preserving supported Windows security metadata requires sufficient access and the correct metadata configuration.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 749,
+        "question": "<p>A company is retiring its self-managed SFTP servers. External partners must keep using SFTP clients and user-specific access, while uploaded files land in S3. The company wants AWS to manage the transfer servers. Which service fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>An S3 gateway endpoint exposed directly as an SFTP server.</p>",
+            "correct": false,
+            "explanation": "<p>A gateway endpoint provides private S3 routing, not an SFTP protocol endpoint.</p>"
+          },
+          {
+            "solution": "<p>AWS Transfer Family with an SFTP server, S3 storage, and appropriate user access policies.</p>",
+            "correct": true,
+            "explanation": "<p>Transfer Family provides managed SFTP access to supported AWS storage with configurable user authorization.</p>"
+          },
+          {
+            "solution": "<p>A DataSync agent as an inbound SFTP listener for all partners.</p>",
+            "correct": false,
+            "explanation": "<p>DataSync agents do not provide the requested managed partner-facing SFTP server.</p>"
+          },
+          {
+            "solution": "<p>CloudFront signed URLs while requiring partners to keep SFTP unchanged.</p>",
+            "correct": false,
+            "explanation": "<p>CloudFront HTTP access is not compatible with unchanged SFTP clients.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 750,
+        "question": "<p>A migration will send sensitive data over Direct Connect. Compliance requires encryption in transit. The proposed design assumes that the dedicated connection encrypts every packet by default. Which statement should guide the design?</p>",
+        "choices": [
+          {
+            "solution": "<p>Direct Connect automatically provides IPsec encryption on every connection.</p>",
+            "correct": false,
+            "explanation": "<p>A dedicated Direct Connect circuit does not automatically add IPsec encryption.</p>"
+          },
+          {
+            "solution": "<p>S3 encryption at rest encrypts every packet on the Direct Connect circuit.</p>",
+            "correct": false,
+            "explanation": "<p>At-rest encryption does not secure the network transport.</p>"
+          },
+          {
+            "solution": "<p>Direct Connect can never carry encrypted traffic.</p>",
+            "correct": false,
+            "explanation": "<p>Encrypted protocols can operate over Direct Connect.</p>"
+          },
+          {
+            "solution": "<p>Add appropriate encryption such as supported MACsec, IPsec, or application TLS; Direct Connect alone is not default transport encryption.</p>",
+            "correct": true,
+            "explanation": "<p>The chosen encryption mechanism must cover the required traffic and meet its support prerequisites.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 752,
+        "question": "<p>A company uses private connectivity from its data center to a VPC. Its DataSync agent must communicate with the service without using public service endpoints. Which endpoint design should the architect choose?</p>",
+        "choices": [
+          {
+            "solution": "<p>A public DataSync service endpoint and an assumption that a private source makes all traffic private.</p>",
+            "correct": false,
+            "explanation": "<p>The source network alone does not change the selected service endpoint.</p>"
+          },
+          {
+            "solution": "<p>An S3 gateway endpoint as the only replacement for all DataSync service connectivity.</p>",
+            "correct": false,
+            "explanation": "<p>An S3 endpoint does not replace the DataSync service endpoint and required data paths.</p>"
+          },
+          {
+            "solution": "<p>A DataSync VPC service endpoint with the required private routing and security rules.</p>",
+            "correct": true,
+            "explanation": "<p>DataSync supports VPC service endpoints so agents can use private service connectivity.</p>"
+          },
+          {
+            "solution": "<p>An internet-facing ALB with no DataSync endpoint behind it.</p>",
+            "correct": false,
+            "explanation": "<p>An ALB does not substitute for the managed DataSync service endpoint.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 757,
+        "question": "<p>A team is moving a MySQL-backed service onto EC2 and RDS for MySQL. Database sessions must use TLS, and the application must authenticate with temporary credentials from its EC2 instance role instead of keeping a database password. Which database feature should the team configure?</p>",
+        "choices": [
+          {
+            "solution": "<p>Turn on KMS encryption for the RDS storage volumes.</p>",
+            "correct": false,
+            "explanation": "<p>Storage encryption protects data at rest. It does not authenticate database connections with an instance role or configure their transport security.</p>"
+          },
+          {
+            "solution": "<p>Supply a trusted RDS certificate bundle through the mysql client --ssl-ca option only.</p>",
+            "correct": false,
+            "explanation": "<p>A CA bundle supports certificate validation for TLS. This client setting alone does not enable role-based database authentication.</p>"
+          },
+          {
+            "solution": "<p>Enable IAM database authentication and authorize the EC2 role to connect as an IAM-enabled database user.</p>",
+            "correct": true,
+            "explanation": "<p>The application signs a short-lived database token using the instance role credentials and presents it over TLS. Both the database user configuration and the role rds-db:connect permission are required.</p>"
+          },
+          {
+            "solution": "<p>Move the database to Aurora MySQL and activate Backtrack.</p>",
+            "correct": false,
+            "explanation": "<p>Backtrack supports rewinding database state. It does not replace password authentication with IAM tokens or configure TLS sessions.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 763,
+        "question": "<p>An auditor needs a history of changes to S3 bucket settings across an account. The security team also wants automated compliance findings whenever a bucket permits public reads or writes. Systems Manager Inventory does not supply this bucket-level configuration assessment. Which service should provide the recording and evaluation?</p>",
+        "choices": [
+          {
+            "solution": "<p>Record S3 resources with AWS Config and apply public-access compliance rules.</p>",
+            "correct": true,
+            "explanation": "<p>Config retains resource configuration history and evaluates rules such as s3-bucket-public-read-prohibited and s3-bucket-public-write-prohibited. Configure recording in the relevant Regions. Detection does not itself prevent a change or remediate it.</p>"
+          },
+          {
+            "solution": "<p>Rely on Trusted Advisor recommendations as the complete configuration audit history.</p>",
+            "correct": false,
+            "explanation": "<p>Trusted Advisor can flag security risks, including S3 permission issues. It does not replace Config resource history and rule-based configuration evaluation.</p>"
+          },
+          {
+            "solution": "<p>Download the IAM account credential report for the bucket audit.</p>",
+            "correct": false,
+            "explanation": "<p>The report describes IAM users and their credentials. It does not contain the required bucket configuration history or public-access evaluations.</p>"
+          },
+          {
+            "solution": "<p>Manually search CloudTrail event history for bucket-related API calls.</p>",
+            "correct": false,
+            "explanation": "<p>CloudTrail helps establish who performed API actions. Manual event searches alone do not supply automated configuration compliance findings and resource-state history.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 766,
+        "question": "<p>An organization requires its IAM account password policy to specify a minimum length of 12 characters. Security staff want a managed, recurring check that flags accounts whose policy settings fall below that requirement. They are auditing the policy configuration rather than reading existing user passwords. Which approach fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Schedule custom Lambda code to retrieve each user password and count its characters.</p>",
+            "correct": false,
+            "explanation": "<p>IAM does not expose existing user passwords for retrieval. Custom code could inspect the account policy, but the proposed per-password inspection is unavailable.</p>"
+          },
+          {
+            "solution": "<p>Send SNS alerts whenever EventBridge observes an IAM ChangePassword event.</p>",
+            "correct": false,
+            "explanation": "<p>A password-change alert reports activity. It does not assess the configured account password policy against the corporate minimum.</p>"
+          },
+          {
+            "solution": "<p>Build a CloudTrail report listing every user who called ChangePassword.</p>",
+            "correct": false,
+            "explanation": "<p>The event list is useful for auditing activity, but it does not evaluate policy settings or reveal the lengths of existing passwords.</p>"
+          },
+          {
+            "solution": "<p>Deploy the AWS Config iam-password-policy rule with MinimumPasswordLength set to 12.</p>",
+            "correct": true,
+            "explanation": "<p>This periodic managed rule evaluates account password-policy settings. Configure its other parameters to match the organization requirements. A compliant policy does not establish the length of existing passwords; new length requirements apply when passwords are next changed.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 769,
+        "question": "<p>A web service uses an EC2 Auto Scaling group and Aurora Serverless. Only its internet-facing ALB should be directly exposed to clients; application and database resources need private placement. Independent network inspection must block configured malicious signatures and prohibited HTTP Host or TLS SNI values on routed traffic. Identifying a client by its supposed source domain and decrypting arbitrary HTTPS URL paths are outside scope. No requirement calls for application-initiated internet access. Which topology provides these capabilities without an unnecessary NAT gateway?</p>",
+        "choices": [
+          {
+            "solution": "<p>Put all tiers in public subnets and use ALB hostname routing as the threat filter.</p>",
+            "correct": false,
+            "explanation": "<p>This does not separate the public entry point from private workloads. Hostname routing chooses destinations and does not replace stateful threat inspection.</p>"
+          },
+          {
+            "solution": "<p>Place the ALB in public subnets, keep compute and database tiers private, and route inspected traffic symmetrically through Network Firewall endpoints in dedicated subnets.</p>",
+            "correct": true,
+            "explanation": "<p>This separates the tiers and adds routed stateful inspection. Use the required multi-AZ ALB placement and appropriate firewall rule scope. Domain rules inspect requested HTTP Host or TLS SNI values, not the originating client domain. NAT is not required simply for replies to inbound ALB requests.</p>"
+          },
+          {
+            "solution": "<p>Add a public NAT gateway and attach a Network Firewall policy directly to the ALB without inspection routes.</p>",
+            "correct": false,
+            "explanation": "<p>Network Firewall is inserted through endpoints and VPC routing rather than an ALB web ACL association. The NAT gateway does not address an outbound-access requirement here.</p>"
+          },
+          {
+            "solution": "<p>Keep the internet-facing ALB private and rely on a public NAT gateway to reject prohibited domain names.</p>",
+            "correct": false,
+            "explanation": "<p>A NAT gateway cannot provide domain-list filtering, and private-only ALB placement does not supply the intended public entry point.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 773,
+        "question": "<p>A document-processing service uploads encrypted files to S3 throughout the day. Bucket policies and separate configuration checks already enforce the organization access requirements. Security staff now need managed threat detection that flags suspicious object access, possible credential misuse, and attempted data exfiltration, with findings routed to an alert channel.</p><p>Which addition best provides this activity-based detection?</p>",
+        "choices": [
+          {
+            "solution": "<p>Run Rekognition against the stored documents to identify suspicious API access.</p>",
+            "correct": false,
+            "explanation": "<p>Rekognition analyzes supported image and video content. It is not a security analytics service for S3 API activity or compromised credentials.</p>"
+          },
+          {
+            "solution": "<p>Enable GuardDuty S3 Protection in the relevant Regions and route its findings through EventBridge to the alert destination.</p>",
+            "correct": true,
+            "explanation": "<p>S3 Protection analyzes object-level CloudTrail event data for suspicious activity and produces GuardDuty findings. It does not need a separately configured CloudTrail data-event trail. EventBridge can route findings to a notification workflow. Detection complements bucket policies and configuration checks; it does not enforce access policies or certify compliance.</p>"
+          },
+          {
+            "solution": "<p>Configure Inspector to treat S3 access anomalies as vulnerability findings.</p>",
+            "correct": false,
+            "explanation": "<p>Inspector assesses supported workloads for vulnerabilities and exposure. It does not supply the requested S3 object-access threat detection.</p>"
+          },
+          {
+            "solution": "<p>Record S3 data events in CloudTrail and rely on that logging alone to classify malicious access.</p>",
+            "correct": false,
+            "explanation": "<p>CloudTrail provides an activity record for auditing and investigation. Event recording by itself does not implement the managed behavioral threat detection and finding generation supplied by GuardDuty.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 777,
+        "question": "<p>A company is placing an EC2 application behind a Network Load Balancer in a VPC that also uses VPC Lattice for service connectivity. Security engineers need inline inspection of the application traffic crossing the VPC internet perimeter in both directions. The requirement concerns these routed ingress and egress paths rather than every service-network flow.</p><p>Which design provides managed packet inspection for the specified paths?</p>",
+        "choices": [
+          {
+            "solution": "<p>Turn on an NLB Traffic Mirroring setting and treat mirror filters as the inline inspection engine.</p>",
+            "correct": false,
+            "explanation": "<p>VPC Traffic Mirroring copies traffic from supported network-interface sources to a target for analysis. A mirror filter selects copied packets; it is not an inline inspection engine or an NLB-wide inspection setting.</p>"
+          },
+          {
+            "solution": "<p>Create Network Access Analyzer scopes and use their findings to inspect live request payloads.</p>",
+            "correct": false,
+            "explanation": "<p>Network Access Analyzer evaluates possible access paths from network configuration. It does not sit in the traffic path or inspect live packet contents.</p>"
+          },
+          {
+            "solution": "<p>Deploy Network Firewall endpoints in dedicated subnets, apply inspection rule groups, and route both directions of the protected traffic through them.</p>",
+            "correct": true,
+            "explanation": "<p>Network Firewall provides managed stateful inspection for traffic steered through its endpoints. VPC routes must create the required inspection paths with symmetric return routing. Deploying a firewall alone does not capture all VPC or VPC Lattice traffic automatically; verify each path that requires inspection.</p>"
+          },
+          {
+            "solution": "<p>Use Detective as a subnet firewall and Reachability Analyzer as its packet-inspection component.</p>",
+            "correct": false,
+            "explanation": "<p>Detective supports security investigation rather than inline firewall enforcement. Reachability Analyzer assesses connectivity from configuration; it does not inspect packets or payloads.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 778,
+        "question": "<p>An insurer must leave its SAP HANA database in the corporate data center while allowing an application in an AWS VPC to use it. The network team chooses an internet-based Site-to-Site VPN with pre-shared keys and a virtual private gateway. The on-premises VPN appliance connects directly to the internet without an upstream NAT device.</p><p>Which requirement must the team satisfy on the customer side of the connection?</p>",
+        "choices": [
+          {
+            "solution": "<p>Run a dedicated NAT instance inside a public VPC subnet to terminate the managed VPN tunnels.</p>",
+            "correct": false,
+            "explanation": "<p>A VPC NAT instance is not required to terminate an AWS-managed Site-to-Site VPN. The customer-managed VPN appliance is in the on-premises network, and the AWS side uses the configured VPN gateway.</p>"
+          },
+          {
+            "solution": "<p>Assign a fixed, publicly reachable IP address to the external interface of the on-premises VPN appliance and identify it in the customer gateway configuration.</p>",
+            "correct": true,
+            "explanation": "<p>For this public-IP, pre-shared-key design, AWS needs the static internet-routable address of the customer gateway device. The appliance must also support the required IPsec configuration. If an upstream NAT device were used, its public address would be supplied instead, with appropriate NAT traversal configuration.</p>"
+          },
+          {
+            "solution": "<p>Make a VPC NAT instance the next hop for every database-bound route.</p>",
+            "correct": false,
+            "explanation": "<p>Routes for the remote database network should lead to the VPN gateway, not an ordinary NAT instance. A VPC route change also does not satisfy the external endpoint-address requirement.</p>"
+          },
+          {
+            "solution": "<p>Allocate an Elastic IP and attach it directly to the virtual private gateway.</p>",
+            "correct": false,
+            "explanation": "<p>A virtual private gateway does not accept a customer-assigned Elastic IP. AWS provisions the public tunnel endpoints for the managed VPN connection.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 779,
+        "question": "<p>An uploader writes objects to a general purpose S3 bucket. The security team requires every PUT request to explicitly select server-side encryption with keys managed by Amazon S3, even though new uploads already receive default encryption. The uploader must use SSE-S3 rather than KMS keys or a key supplied by the client.</p><p>Which HTTP request header and value select the required encryption method?</p>",
+        "choices": [
+          {
+            "solution": "<p>Set x-amz-server-side-encryption-customer-algorithm to AES256.</p>",
+            "correct": false,
+            "explanation": "<p>This header specifies the algorithm for SSE-C, where the caller supplies the encryption key. The AES256 value does not make this an SSE-S3 request.</p>"
+          },
+          {
+            "solution": "<p>Set x-amz-server-side-encryption to AES256.</p>",
+            "correct": true,
+            "explanation": "<p>This header-value pair explicitly requests SSE-S3, with S3 managing the encryption keys. New uploads are encrypted at rest by default, so the header is not universally necessary merely to obtain encryption; it is required here by the explicit-request policy.</p>"
+          },
+          {
+            "solution": "<p>Send the encryption key in x-amz-server-side-encryption-customer-key.</p>",
+            "correct": false,
+            "explanation": "<p>This SSE-C header carries a client-provided key. Supplying a key conflicts with the requirement that S3 manage the keys for SSE-S3.</p>"
+          },
+          {
+            "solution": "<p>Provide the key checksum in x-amz-server-side-encryption-customer-key-MD5.</p>",
+            "correct": false,
+            "explanation": "<p>This is an integrity-check header for the key supplied with SSE-C. It does not select S3-managed encryption.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 780,
+        "question": "<p>Several business units maintain analytical datasets in S3 buckets owned by separate AWS accounts. Analysts work from a shared analytics account and need to query tables across those datasets. Their IAM roles must determine which tables and columns they can access. The organization wants to avoid maintaining copy pipelines and duplicate storage solely to provide this shared view.</p><p>Which approach best supplies cross-account data governance with minimal custom infrastructure?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use Lake Formation cross-account sharing and grant the analytics roles access to cataloged datasets, adding resource links for the query engine where required.</p>",
+            "correct": true,
+            "explanation": "<p>Lake Formation governs access to shared Data Catalog resources and their underlying data, including table and column permissions. Integrated engines such as Athena can query shared resources using resource links. Configure the required data-location, IAM, and encryption permissions. Sharing does not require moving all source objects into the analytics account.</p>"
+          },
+          {
+            "solution": "<p>Send every business unit dataset through Firehose into the analytics account and use the delivery streams as the authorization layer.</p>",
+            "correct": false,
+            "explanation": "<p>Firehose delivers data but does not supply the requested fine-grained query permissions. Copying all datasets introduces unnecessary transfer and storage work for this shared-access requirement.</p>"
+          },
+          {
+            "solution": "<p>Schedule Lambda functions with EventBridge to copy source files into central buckets and implement role-based filtering in the copy code.</p>",
+            "correct": false,
+            "explanation": "<p>Custom copying adds pipeline maintenance, duplicate storage, and synchronization concerns. It also leaves the team building access logic instead of using managed cross-account data governance.</p>"
+          },
+          {
+            "solution": "<p>Use Control Tower account governance as the query-level permission system for all S3 datasets.</p>",
+            "correct": false,
+            "explanation": "<p>Control Tower governs a multi-account AWS environment. It is not a substitute for sharing cataloged tables and enforcing fine-grained analytical data permissions.</p>"
           }
         ]
       }
@@ -14825,6 +16109,723 @@
             "explanation": "<p>DynamoDB requires converting the MySQL schema and queries into a different data model and API.</p>"
           }
         ]
+      },
+      {
+        "questionNumber": 697,
+        "question": "<p>A Lambda function processes batches from a standard SQS queue. One malformed record causes all records in the batch to be retried. The team wants successful records removed and only failed records retried. Which TWO changes are needed? (Choose two.)</p>",
+        "choices": [
+          {
+            "solution": "<p>Set the queue retention period to zero.</p>",
+            "correct": false,
+            "explanation": "<p>Removing message retention would not implement selective retries and risks losing work.</p>"
+          },
+          {
+            "solution": "<p>Enable ReportBatchItemFailures on the event source mapping.</p>",
+            "correct": true,
+            "explanation": "<p>The event source mapping must accept partial batch responses instead of treating the entire batch as failed.</p>"
+          },
+          {
+            "solution": "<p>Throw an unhandled exception after every batch.</p>",
+            "correct": false,
+            "explanation": "<p>An unhandled exception marks the entire invocation as failed.</p>"
+          },
+          {
+            "solution": "<p>Catch record-level failures and return their message IDs in batchItemFailures.</p>",
+            "correct": true,
+            "explanation": "<p>Returning only failed item identifiers lets Lambda distinguish successful and failed records.</p>"
+          },
+          {
+            "solution": "<p>Increase the batch size without changing the response format.</p>",
+            "correct": false,
+            "explanation": "<p>Larger batches do not change failure semantics and can increase duplicate processing.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 698,
+        "question": "<p>An EventBridge rule sends order events to a target that can be unavailable longer than the retry window. Operators must recover events that exhaust delivery retries. What should the architect configure?</p>",
+        "choices": [
+          {
+            "solution": "<p>An SQS dead-letter queue on the rule target with the necessary send permission.</p>",
+            "correct": true,
+            "explanation": "<p>A target DLQ retains undelivered events for inspection and later recovery after retries are exhausted.</p>"
+          },
+          {
+            "solution": "<p>A longer CloudWatch Logs retention period only.</p>",
+            "correct": false,
+            "explanation": "<p>Log retention does not retain undelivered event payloads as recoverable queue messages.</p>"
+          },
+          {
+            "solution": "<p>A shorter retry window without a dead-letter queue.</p>",
+            "correct": false,
+            "explanation": "<p>Events are dropped after retry limits are exhausted unless a DLQ captures them.</p>"
+          },
+          {
+            "solution": "<p>An SQS queue as the dead-letter destination of an unrelated Lambda function.</p>",
+            "correct": false,
+            "explanation": "<p>A different function DLQ does not capture this rule target delivery failure.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 699,
+        "question": "<p>An approval process can wait two days for a human callback before continuing. The team needs a durable managed workflow with execution history. Which orchestration choice fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>A Lambda invocation that sleeps until approval arrives.</p>",
+            "correct": false,
+            "explanation": "<p>A single Lambda invocation cannot remain running for two days.</p>"
+          },
+          {
+            "solution": "<p>A Step Functions Express Workflow that waits two days.</p>",
+            "correct": false,
+            "explanation": "<p>Express Workflows have a much shorter execution-duration limit and do not fit this wait.</p>"
+          },
+          {
+            "solution": "<p>A Step Functions Standard Workflow using a callback task token.</p>",
+            "correct": true,
+            "explanation": "<p>Standard Workflows support long-running durable executions and callback integration for human approvals.</p>"
+          },
+          {
+            "solution": "<p>An API Gateway request held open for the entire approval period.</p>",
+            "correct": false,
+            "explanation": "<p>An open synchronous API request is not durable orchestration for a multi-day process.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 700,
+        "question": "<p>A payment application uses Aurora Global Database with a primary and a secondary Region. A review asks whether an unplanned primary-Region loss guarantees zero loss of acknowledged writes. Which statement should guide the disaster recovery plan?</p>",
+        "choices": [
+          {
+            "solution": "<p>Cross-Region replication is synchronous, so acknowledged writes can never be lost.</p>",
+            "correct": false,
+            "explanation": "<p>Aurora Global Database uses asynchronous cross-Region replication; this claim is too strong.</p>"
+          },
+          {
+            "solution": "<p>Asynchronous replication can leave recent writes unreplicated; plan and test failover against the required RPO.</p>",
+            "correct": true,
+            "explanation": "<p>An unplanned outage can lose writes not yet replicated to the secondary Region.</p>"
+          },
+          {
+            "solution": "<p>The secondary Region cannot be used for disaster recovery.</p>",
+            "correct": false,
+            "explanation": "<p>A secondary cluster can serve as a regional recovery target.</p>"
+          },
+          {
+            "solution": "<p>Adding a reader in the primary Region makes cross-Region replication synchronous.</p>",
+            "correct": false,
+            "explanation": "<p>Local readers do not change the cross-Region replication mechanism.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 701,
+        "question": "<p>A company is creating a new DynamoDB global table in supported Regions. It requires an RPO of zero and strongly consistent reads of base-table items across Regions. Higher write latency is acceptable. Which design meets these requirements?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use multi-Region eventual consistency and request strongly consistent reads from each replica.</p>",
+            "correct": false,
+            "explanation": "<p>MREC strong reads reflect local state and can miss writes that have not replicated from another Region.</p>"
+          },
+          {
+            "solution": "<p>Create independent tables and copy data nightly.</p>",
+            "correct": false,
+            "explanation": "<p>Nightly copying leaves a substantial replication gap and does not provide global strong consistency.</p>"
+          },
+          {
+            "solution": "<p>Add DAX to an eventually consistent global table.</p>",
+            "correct": false,
+            "explanation": "<p>Caching does not change cross-Region replication consistency or guarantee zero RPO.</p>"
+          },
+          {
+            "solution": "<p>Use multi-Region strong consistency with the required three-Region topology.</p>",
+            "correct": true,
+            "explanation": "<p>MRSC synchronously replicates writes and supports globally strongly consistent base-table reads and zero RPO.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 702,
+        "question": "<p>A team wants RDS for PostgreSQL high availability and readable failover instances across three Availability Zones. The selected engine version and Region support Multi-AZ DB clusters. Which deployment should it choose?</p>",
+        "choices": [
+          {
+            "solution": "<p>An RDS Multi-AZ DB cluster with one writer and two readers.</p>",
+            "correct": true,
+            "explanation": "<p>This deployment places a writer and two readable replicas in separate Availability Zones.</p>"
+          },
+          {
+            "solution": "<p>A traditional Multi-AZ DB instance and direct reporting queries to its standby.</p>",
+            "correct": false,
+            "explanation": "<p>The standby of a traditional Multi-AZ DB instance does not serve application read traffic.</p>"
+          },
+          {
+            "solution": "<p>A Single-AZ DB instance with automated backups.</p>",
+            "correct": false,
+            "explanation": "<p>Backups do not provide live readable failover instances across three Availability Zones.</p>"
+          },
+          {
+            "solution": "<p>Three independent Single-AZ databases without replication.</p>",
+            "correct": false,
+            "explanation": "<p>Independent databases do not provide coordinated replication and managed failover.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 703,
+        "question": "<p>A company wants copies of supported AWS Backup recovery points in a separate account in the same organization. Cross-account backup is enabled, and encryption-key permissions are configured. Which configuration completes the copy design?</p>",
+        "choices": [
+          {
+            "solution": "<p>Share the source account root credentials with the backup account.</p>",
+            "correct": false,
+            "explanation": "<p>Cross-account copying uses service permissions and vault policies rather than shared credentials.</p>"
+          },
+          {
+            "solution": "<p>Tag the source vault with the destination account ID only.</p>",
+            "correct": false,
+            "explanation": "<p>A tag alone neither authorizes a copy nor schedules one.</p>"
+          },
+          {
+            "solution": "<p>Allow backup:CopyIntoBackupVault in the destination vault policy and add a backup-plan copy action targeting that vault.</p>",
+            "correct": true,
+            "explanation": "<p>The destination policy authorizes incoming copies and the copy action schedules their creation.</p>"
+          },
+          {
+            "solution": "<p>Add the destination account as a CloudWatch Logs subscriber.</p>",
+            "correct": false,
+            "explanation": "<p>A log subscription copies log events, not AWS Backup recovery points.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 704,
+        "question": "<p>A service has primary and standby regional endpoints. The primary can accept TCP connections even when its application is unusable. The team wants Route 53 DNS failover to consider an application readiness URL. Which approach fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use weighted routing without any health information.</p>",
+            "correct": false,
+            "explanation": "<p>Weights alone do not detect application failure.</p>"
+          },
+          {
+            "solution": "<p>Associate a health check of an HTTP or HTTPS readiness path with the primary failover record.</p>",
+            "correct": true,
+            "explanation": "<p>Application-level checks can detect failure even when the network connection still succeeds.</p>"
+          },
+          {
+            "solution": "<p>Create only a TCP health check on an unrelated open port.</p>",
+            "correct": false,
+            "explanation": "<p>An open port does not prove that the required application operation is healthy.</p>"
+          },
+          {
+            "solution": "<p>Increase the DNS TTL to prevent cached answers from expiring.</p>",
+            "correct": false,
+            "explanation": "<p>Longer caching can delay client movement and does not detect application readiness.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 705,
+        "question": "<p>A Linux application runs in three Availability Zones and shares files over NFS. The file system must remain available when one Availability Zone fails. Which design meets the requirement with a managed shared file system?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use one EFS One Zone file system and describe it as replicated across three zones.</p>",
+            "correct": false,
+            "explanation": "<p>One Zone stores data within one Availability Zone and does not provide the required zone resilience.</p>"
+          },
+          {
+            "solution": "<p>Share an EC2 instance-store directory over NFS from one instance.</p>",
+            "correct": false,
+            "explanation": "<p>A single instance and its local storage introduce a failure point.</p>"
+          },
+          {
+            "solution": "<p>Mount one ordinary EBS volume on all application instances across zones.</p>",
+            "correct": false,
+            "explanation": "<p>EBS volumes are zonal and do not provide this cross-zone shared NFS design.</p>"
+          },
+          {
+            "solution": "<p>Use an EFS Regional file system with mount targets in the application Availability Zones.</p>",
+            "correct": true,
+            "explanation": "<p>Regional EFS stores data across Availability Zones and provides shared NFS access through mount targets.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 706,
+        "question": "<p>A billing worker reads a standard SQS queue. It can crash after a payment provider accepts a charge but before the worker deletes the message. How should the application prevent a redelivery from creating another charge?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use a stable payment operation ID as an idempotency key enforced by the payment operation, then delete successfully handled messages.</p>",
+            "correct": true,
+            "explanation": "<p>A repeated request with the same idempotency key can return the original outcome without another charge.</p>"
+          },
+          {
+            "solution": "<p>Delete every message before calling the payment provider.</p>",
+            "correct": false,
+            "explanation": "<p>A crash after deletion can lose the charge request entirely.</p>"
+          },
+          {
+            "solution": "<p>Assume that successful ReceiveMessage calls permanently remove messages.</p>",
+            "correct": false,
+            "explanation": "<p>Receiving hides a message temporarily; it does not delete it or prevent redelivery.</p>"
+          },
+          {
+            "solution": "<p>Increase the visibility timeout and assume duplicate delivery is impossible.</p>",
+            "correct": false,
+            "explanation": "<p>A longer timeout can reduce overlap but does not provide exactly-once business effects.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 707,
+        "question": "<p>An ECS service uses rolling deployments and has a previously completed healthy deployment. A new task version fails startup health checks. The team wants ECS to stop the failed rollout and restore the previous version automatically. Which setting meets this need?</p>",
+        "choices": [
+          {
+            "solution": "<p>Disable container and load balancer health checks.</p>",
+            "correct": false,
+            "explanation": "<p>Removing checks hides unhealthy deployments instead of triggering recovery.</p>"
+          },
+          {
+            "solution": "<p>Increase desired task count indefinitely.</p>",
+            "correct": false,
+            "explanation": "<p>More tasks running the faulty version do not repair the deployment.</p>"
+          },
+          {
+            "solution": "<p>Enable the deployment circuit breaker with rollback.</p>",
+            "correct": true,
+            "explanation": "<p>The circuit breaker detects failure to reach a steady state and can roll back to a completed deployment.</p>"
+          },
+          {
+            "solution": "<p>Set a CloudWatch Logs retention policy on the container logs.</p>",
+            "correct": false,
+            "explanation": "<p>Log retention does not control service deployment rollback.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 708,
+        "question": "<p>A team enables S3 Cross-Region Replication after a source bucket already contains years of objects. New objects replicate successfully, but the older objects are absent from the destination. How should the team replicate the existing objects with managed tooling?</p>",
+        "choices": [
+          {
+            "solution": "<p>Wait for the live replication rule to discover every old object automatically.</p>",
+            "correct": false,
+            "explanation": "<p>Live replication does not automatically backfill objects created before the rule.</p>"
+          },
+          {
+            "solution": "<p>Run an S3 Batch Replication job for the existing objects with the required role and replication configuration.</p>",
+            "correct": true,
+            "explanation": "<p>Batch Replication can process objects that existed before replication was configured.</p>"
+          },
+          {
+            "solution": "<p>Disable versioning on both buckets.</p>",
+            "correct": false,
+            "explanation": "<p>Replication requires versioning; disabling it does not backfill existing data.</p>"
+          },
+          {
+            "solution": "<p>Change the source bucket ACL to public-read.</p>",
+            "correct": false,
+            "explanation": "<p>Public access does not initiate replication and unnecessarily exposes the data.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 737,
+        "question": "<p>A company must move supported physical and virtual application servers to EC2 quickly, with minimal application changes and a short cutover window. It wants continuous server replication before launching the target servers. Which service is designed for this rehosting approach?</p>",
+        "choices": [
+          {
+            "solution": "<p>AWS DataSync alone to convert operating systems into bootable EC2 instances.</p>",
+            "correct": false,
+            "explanation": "<p>DataSync transfers file and object data; it does not perform the required server conversion.</p>"
+          },
+          {
+            "solution": "<p>AWS Transform MGN, formerly AWS Application Migration Service.</p>",
+            "correct": true,
+            "explanation": "<p>MGN replicates server blocks continuously and converts the replicated servers for launch on AWS.</p>"
+          },
+          {
+            "solution": "<p>AWS DMS alone to replicate every operating system and application binary.</p>",
+            "correct": false,
+            "explanation": "<p>DMS replicates supported database data rather than entire server disks.</p>"
+          },
+          {
+            "solution": "<p>Amazon Athena to execute the source application without EC2.</p>",
+            "correct": false,
+            "explanation": "<p>Athena is a query service and does not rehost application servers.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 738,
+        "question": "<p>A team uses MGN to replicate a production server and launches a test instance before cutover. Production continues accepting updates. Which statement correctly describes subsequent changes from the source?</p>",
+        "choices": [
+          {
+            "solution": "<p>The source immediately stops serving production when a test instance launches.</p>",
+            "correct": false,
+            "explanation": "<p>A test launch does not automatically cut over production.</p>"
+          },
+          {
+            "solution": "<p>The test instance becomes a continuously synchronized second production writer.</p>",
+            "correct": false,
+            "explanation": "<p>The test instance is not the destination of ongoing source replication.</p>"
+          },
+          {
+            "solution": "<p>Testing permanently disables replication for the source server.</p>",
+            "correct": false,
+            "explanation": "<p>Replication can continue after test instances are launched.</p>"
+          },
+          {
+            "solution": "<p>Changes continue replicating into the staging area, while the launched test instance does not receive those ongoing updates.</p>",
+            "correct": true,
+            "explanation": "<p>Test launches support validation without turning the test instance into a continuously updated replica.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 741,
+        "question": "<p>A supported on-premises database must move to RDS with a short final outage. The initial load takes days, and production writes must continue during that time. The source meets the logging prerequisites. Which DMS task approach fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>A full-load-only task followed immediately by deleting the source.</p>",
+            "correct": false,
+            "explanation": "<p>A full-load-only task does not continue applying changes made during the migration.</p>"
+          },
+          {
+            "solution": "<p>A full load with ongoing change data capture, followed by a controlled cutover after catching up.</p>",
+            "correct": true,
+            "explanation": "<p>CDC applies logged source changes after the initial copy, reducing the work left for the final outage.</p>"
+          },
+          {
+            "solution": "<p>DataSync copies of open database files as a substitute for engine-level replication.</p>",
+            "correct": false,
+            "explanation": "<p>File copying does not provide DMS transaction-log capture and application of database changes.</p>"
+          },
+          {
+            "solution": "<p>A nightly CSV export with no final synchronization.</p>",
+            "correct": false,
+            "explanation": "<p>Nightly exports leave a data gap and do not provide the required ongoing replication.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 743,
+        "question": "<p>A DMS full-load-and-CDC migration has finished loading all tables, but target CDC latency is still high. The team is ready to redirect application writes. Which action best protects against missing recent source changes?</p>",
+        "choices": [
+          {
+            "solution": "<p>Pause source writes during the cutover window, let pending changes apply, verify readiness, and then redirect the application.</p>",
+            "correct": true,
+            "explanation": "<p>A completed full load is insufficient while changes remain unapplied; a controlled final synchronization closes that gap.</p>"
+          },
+          {
+            "solution": "<p>Redirect writes immediately because full-load completion proves CDC has caught up.</p>",
+            "correct": false,
+            "explanation": "<p>Full-load progress and ongoing replication latency measure different parts of the migration.</p>"
+          },
+          {
+            "solution": "<p>Delete the replication task as soon as the first table finishes.</p>",
+            "correct": false,
+            "explanation": "<p>Stopping replication early prevents remaining data and changes from arriving.</p>"
+          },
+          {
+            "solution": "<p>Allow independent writes to both databases without conflict handling.</p>",
+            "correct": false,
+            "explanation": "<p>Uncoordinated dual writes can create divergence and do not resolve the existing backlog.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 744,
+        "question": "<p>A production migration uses an AWS DMS replication instance for ongoing replication. The team requires managed failover for the replication instance if its Availability Zone becomes unavailable. Which choice addresses that requirement?</p>",
+        "choices": [
+          {
+            "solution": "<p>Increase the source database storage only.</p>",
+            "correct": false,
+            "explanation": "<p>Source storage capacity does not make the DMS replication instance highly available.</p>"
+          },
+          {
+            "solution": "<p>Add an application cache in front of the target database.</p>",
+            "correct": false,
+            "explanation": "<p>An application cache does not provide replication-instance failover.</p>"
+          },
+          {
+            "solution": "<p>Create the DMS replication instance as a Multi-AZ deployment.</p>",
+            "correct": true,
+            "explanation": "<p>Multi-AZ provides high availability and failover support for the replication instance.</p>"
+          },
+          {
+            "solution": "<p>Add a DNS alias that points to the same Single-AZ replication instance.</p>",
+            "correct": false,
+            "explanation": "<p>A second name for the same instance does not provide another failure domain.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 745,
+        "question": "<p>A team migrates a supported relational database with DMS and needs to detect differences between source and target rows. The endpoints meet validation prerequisites. Which feature should it enable and account for in capacity planning?</p>",
+        "choices": [
+          {
+            "solution": "<p>CloudTrail as a row-by-row comparison engine.</p>",
+            "correct": false,
+            "explanation": "<p>CloudTrail records API activity rather than comparing application table rows.</p>"
+          },
+          {
+            "solution": "<p>DMS data validation, allowing for its additional source, target, and network workload.</p>",
+            "correct": true,
+            "explanation": "<p>Validation compares source and target data and reports mismatches, using additional resources.</p>"
+          },
+          {
+            "solution": "<p>S3 versioning on an unrelated bucket.</p>",
+            "correct": false,
+            "explanation": "<p>An unrelated bucket setting does not validate migrated database rows.</p>"
+          },
+          {
+            "solution": "<p>Only compare the database hostnames.</p>",
+            "correct": false,
+            "explanation": "<p>Hostnames do not provide evidence that row contents match.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 753,
+        "question": "<p>A DataSync migration must verify the contents copied in a task execution instead of relying only on successful network transmission. The selected mode supports end-of-transfer verification. Which setting explicitly compares transferred source and destination data?</p>",
+        "choices": [
+          {
+            "solution": "<p>Compare only the number of folders at the destination.</p>",
+            "correct": false,
+            "explanation": "<p>Matching folder counts does not establish that transferred contents match.</p>"
+          },
+          {
+            "solution": "<p>Use ONLY_FILES_TRANSFERRED verification.</p>",
+            "correct": true,
+            "explanation": "<p>This option compares checksums for transferred data and metadata at the source and destination.</p>"
+          },
+          {
+            "solution": "<p>Set a longer S3 lifecycle retention period.</p>",
+            "correct": false,
+            "explanation": "<p>Retention duration does not compare source and destination contents.</p>"
+          },
+          {
+            "solution": "<p>Ignore all verification mismatches if the task created destination file names.</p>",
+            "correct": false,
+            "explanation": "<p>Names alone do not prove successful, accurate content transfer.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 755,
+        "question": "<p>Two legacy applications exchange frequent synchronous requests and cannot tolerate the latency of being split between the data center and AWS. The team is planning migration waves. Which approach best addresses this dependency?</p>",
+        "choices": [
+          {
+            "solution": "<p>Place the tightly coupled applications in a dependency group and coordinate their migration and cutover.</p>",
+            "correct": true,
+            "explanation": "<p>Dependency-aware grouping avoids an unsupported split across environments during the move.</p>"
+          },
+          {
+            "solution": "<p>Migrate servers alphabetically without checking application relationships.</p>",
+            "correct": false,
+            "explanation": "<p>Server naming does not reveal latency-sensitive application dependencies.</p>"
+          },
+          {
+            "solution": "<p>Assume Direct Connect removes all latency between the data center and AWS.</p>",
+            "correct": false,
+            "explanation": "<p>Private connectivity does not eliminate distance and network latency.</p>"
+          },
+          {
+            "solution": "<p>Migrate one application and permanently block communication with the other.</p>",
+            "correct": false,
+            "explanation": "<p>Blocking a required synchronous dependency would break the application behavior.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 756,
+        "question": "<p>A team copies an active file share to EFS with DataSync before moving the application. Some files change during transfers, and the team requires a consistent final dataset at cutover. Which approach is appropriate?</p>",
+        "choices": [
+          {
+            "solution": "<p>Assume DataSync automatically freezes every source application while transferring.</p>",
+            "correct": false,
+            "explanation": "<p>DataSync does not lock application writes or provide an automatic application-wide freeze.</p>"
+          },
+          {
+            "solution": "<p>Redirect the application after the first copied file appears.</p>",
+            "correct": false,
+            "explanation": "<p>The destination is incomplete and may contain files from different update times.</p>"
+          },
+          {
+            "solution": "<p>Quiesce writers or use a suitable consistent source snapshot, run a final transfer, and resolve verification issues before switching.</p>",
+            "correct": true,
+            "explanation": "<p>Controlling source changes and verifying the final copy avoids relying on a changing file set at cutover.</p>"
+          },
+          {
+            "solution": "<p>Disable verification and consider all open files transactionally consistent.</p>",
+            "correct": false,
+            "explanation": "<p>Disabling verification does not create application-level consistency or prevent source changes.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 759,
+        "question": "<p>A business wants visitors to reach its website at example.com, without a www prefix. Route 53 hosts the public zone, and an internet-facing ALB distributes requests to the application servers. Which IPv4 DNS entry should be placed at the zone root?</p>",
+        "choices": [
+          {
+            "solution": "<p>Create an A alias whose target is the ALB DNS endpoint.</p>",
+            "correct": true,
+            "explanation": "<p>Route 53 supports an A alias at the zone root and resolves the ALB target to its current addresses. No manual maintenance of load balancer IPs is needed.</p>"
+          },
+          {
+            "solution": "<p>Put a conventional CNAME at example.com that targets the ALB hostname.</p>",
+            "correct": false,
+            "explanation": "<p>A CNAME cannot coexist with the SOA and NS records required at the zone root. An alias provides the appropriate root-domain mapping.</p>"
+          },
+          {
+            "solution": "<p>Resolve the ALB once and save one returned address in a conventional A record.</p>",
+            "correct": false,
+            "explanation": "<p>ALB addresses can change. Pinning a currently resolved address in an ordinary A record is not a stable way to publish the load balancer.</p>"
+          },
+          {
+            "solution": "<p>Choose the CNAME record type at the zone root and enable its Alias setting.</p>",
+            "correct": false,
+            "explanation": "<p>Calling the record an alias does not make CNAME valid at the apex. The supported IPv4 mapping to the ALB uses an A alias.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 760,
+        "question": "<p>A financial calculation runs in a standard Lambda function with its timeout set to the maximum supported value and its memory allocation already at the maximum. Typical batches finish in 13 to 14 minutes. Some larger batches stop at approximately 900 seconds, leaving their work incomplete. What most likely explains these terminations?</p>",
+        "choices": [
+          {
+            "solution": "<p>The Lambda platform returns an internal ServiceException for the larger batches.</p>",
+            "correct": false,
+            "explanation": "<p>No internal service error is reported. Failures consistently near the configured duration limit are stronger evidence of a timeout.</p>"
+          },
+          {
+            "solution": "<p>The account exhausts its available concurrent executions and kills the running batches.</p>",
+            "correct": false,
+            "explanation": "<p>Concurrency exhaustion throttles attempts to start additional executions; it does not kill existing executions because they have run for a long time.</p>"
+          },
+          {
+            "solution": "<p>The longer calculations reach the function execution timeout.</p>",
+            "correct": true,
+            "explanation": "<p>A standard Lambda invocation can run for at most 900 seconds. Memory does not extend that deadline. Some invocation types on Lambda Managed Instances have different limits, but that execution model is excluded here.</p>"
+          },
+          {
+            "solution": "<p>A recursive implementation has been proven to keep the function running indefinitely.</p>",
+            "correct": false,
+            "explanation": "<p>The scenario provides no evidence of recursion. A larger finite workload can simply need more time than the execution limit permits.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 764,
+        "question": "<p>A team is publishing a static site through the S3 website endpoint, with Route 53 providing authoritative DNS for the public address portal.example.com. CloudFront is not part of the design. Which prerequisites apply to this direct custom-domain setup? (Choose two.)</p>",
+        "choices": [
+          {
+            "solution": "<p>Name the website bucket portal.example.com to match the requested hostname.</p>",
+            "correct": true,
+            "explanation": "<p>For direct routing to an S3 website endpoint, the bucket name must match the domain or subdomain visitors use. A CloudFront-fronted design has different naming requirements.</p>"
+          },
+          {
+            "solution": "<p>Have a registered public domain covering the website hostname.</p>",
+            "correct": true,
+            "explanation": "<p>The organization needs a registered domain and the corresponding authoritative DNS configuration. The registrar can be Route 53 or another provider.</p>"
+          },
+          {
+            "solution": "<p>Publish a mail-exchange record as the website routing entry.</p>",
+            "correct": false,
+            "explanation": "<p>MX records direct email delivery. The website normally uses a Route 53 A alias to the regional S3 website endpoint.</p>"
+          },
+          {
+            "solution": "<p>Enable CORS before Route 53 can resolve the website name.</p>",
+            "correct": false,
+            "explanation": "<p>CORS controls browser cross-origin requests; it is not required to configure DNS routing to the site.</p>"
+          },
+          {
+            "solution": "<p>Locate the bucket in the Region assigned to its public hosted zone.</p>",
+            "correct": false,
+            "explanation": "<p>Public Route 53 hosted zones are global and have no bucket-matching Region requirement. The alias must target the correct regional website endpoint.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 768,
+        "question": "<p>A production VPC has a private-subnet application and a single Direct Connect path to a data center. It is peered with a second VPC containing public subnets. The second VPC has no transit role. Which additions can provide an alternative path from the data center directly to the production VPC? (Choose two.)</p>",
+        "choices": [
+          {
+            "solution": "<p>Provision an independent Direct Connect circuit and a private virtual interface configured to reach the production VPC.</p>",
+            "correct": true,
+            "explanation": "<p>An independently routed circuit removes dependence on the original link. Separate devices, physical paths, and preferably locations improve fault isolation; failover routing must also be configured.</p>"
+          },
+          {
+            "solution": "<p>Terminate a data-center VPN in the second VPC and forward its traffic through the peering link.</p>",
+            "correct": false,
+            "explanation": "<p>VPC peering cannot provide edge-to-edge access through another VPC VPN. This does not establish a usable backup path to the production VPC.</p>"
+          },
+          {
+            "solution": "<p>Add an internet-based Site-to-Site VPN to the production VPC gateway and configure backup routing.</p>",
+            "correct": true,
+            "explanation": "<p>The VPN provides a path independent of the dedicated connection. A virtual private gateway supports this connectivity even when the application uses only private subnets.</p>"
+          },
+          {
+            "solution": "<p>Ask VPN CloudHub to provision another dedicated Direct Connect circuit automatically.</p>",
+            "correct": false,
+            "explanation": "<p>CloudHub describes routing between sites through a shared virtual private gateway. It does not order or create a Direct Connect circuit.</p>"
+          },
+          {
+            "solution": "<p>Attach another Direct Connect path exclusively to the second VPC and rely on peering to reach production.</p>",
+            "correct": false,
+            "explanation": "<p>A peered VPC cannot borrow the second VPC Direct Connect path. What matters is the actual gateway attachment and routing, not merely the Region containing the connection.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 770,
+        "question": "<p>A Windows collaboration platform is deployed from a CloudFormation template. Its EC2 hosts bootstrap directory services, a SQL Server database, and application components. Dependent resources must not begin creation merely because an upstream VM has launched; installation and service-readiness checks must finish first.</p><p>Which mechanism should keep an EC2 resource in its creation phase until its bootstrap process confirms readiness?</p>",
+        "choices": [
+          {
+            "solution": "<p>Add a CreationPolicy with resource signals to the EC2 resource, then call cfn-signal after installation and readiness checks succeed.</p>",
+            "correct": true,
+            "explanation": "<p>CreationPolicy holds the resource short of CREATE_COMPLETE while CloudFormation waits for the configured success signals. The bootstrap script should use cfn-signal to report the actual outcome within the timeout. Resources that depend on this resource wait for its creation to complete; unrelated resources may still be created in parallel.</p>"
+          },
+          {
+            "solution": "<p>Set UpdateReplacePolicy on the EC2 resource and report bootstrap completion through cfn-signal.</p>",
+            "correct": false,
+            "explanation": "<p>UpdateReplacePolicy determines what happens to an old physical resource when an update replaces it. It does not establish a signal-based readiness gate during initial creation.</p>"
+          },
+          {
+            "solution": "<p>Declare DependsOn relationships and use cfn-init alone to send a readiness acknowledgment.</p>",
+            "correct": false,
+            "explanation": "<p>DependsOn orders resource operations but does not independently test whether software inside an instance is ready. cfn-init applies bootstrap metadata; cfn-signal is the helper that reports success or failure to a waiting creation policy.</p>"
+          },
+          {
+            "solution": "<p>Attach UpdatePolicy to the individual instance and use cfn-signal to pause its initial creation.</p>",
+            "correct": false,
+            "explanation": "<p>UpdatePolicy governs supported update operations, including Auto Scaling group rolling updates that can wait for signals. It is not the readiness policy for creating an individual EC2 instance; CreationPolicy addresses that requirement.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 772,
+        "question": "<p>An EC2 Auto Scaling group serves a website through an ALB across several Availability Zones. Scheduled Systems Manager patching sometimes leaves a host failing its application health check, so Auto Scaling replaces it. The operating system remains reachable through Systems Manager, and the CloudWatch agent is already installed with permission to publish application and system logs.</p><p>The team wants a simple pre-termination workflow that gives pending log records time to reach CloudWatch Logs before a normal Auto Scaling replacement deletes the instance. Which option uses the correct lifecycle state and event while reusing the existing log collector?</p>",
+        "choices": [
+          {
+            "solution": "<p>Pause replacement in Pending:Wait, handle EC2 Instance-terminate Lifecycle Action with EventBridge and Lambda, and run a custom log-upload automation before releasing the instance.</p>",
+            "correct": false,
+            "explanation": "<p>Pending:Wait belongs to a launch lifecycle hook. A termination hook pauses an instance in Terminating:Wait, so the proposed state is incorrect even though the event identifies a termination lifecycle action.</p>"
+          },
+          {
+            "solution": "<p>Pause replacement in Terminating:Wait and build a new Step Functions workflow with custom file-reading and log-upload tasks.</p>",
+            "correct": false,
+            "explanation": "<p>A state machine could orchestrate collection when paired with executable tasks, but Step Functions does not itself read instance files. Building a replacement collection workflow adds complexity when the agent and a reachable management channel already exist.</p>"
+          },
+          {
+            "solution": "<p>Use a termination hook to enter Terminating:Wait, route EC2 Instance-terminate Lifecycle Action to Lambda, and use Systems Manager to coordinate the existing CloudWatch agent before completing the lifecycle action.</p>",
+            "correct": true,
+            "explanation": "<p>The hook supplies a bounded collection window before normal termination. Lambda can use the available management channel to coordinate collection and verify delivery, then call CompleteLifecycleAction. Use heartbeats when necessary and handle timeouts. Keep the agent forwarding logs continuously: a hook cannot guarantee recovery of unshipped records after an OS failure, an inaccessible host, or expiration of its wait period.</p>"
+          },
+          {
+            "solution": "<p>Enter Terminating:Wait but start the log-copy command only when EventBridge receives EC2 Instance Terminate Successful.</p>",
+            "correct": false,
+            "explanation": "<p>The successful-termination event arrives after the instance has been terminated. It is too late to read its ephemeral local data; the collection must start from the earlier lifecycle-action event.</p>"
+          }
+        ]
       }
     ],
     "Design Cost-Optimized Architectures": [
@@ -17136,6 +19137,557 @@
             "solution": "<p>Launch an Amazon EC2 instance in the same VPC as the file system. Mount the file system.</p><p>Create a script to routinely synchronize all objects that changed in the origin S3 bucket to the destination S3 bucket and the mounted file system.</p>",
             "correct": false,
             "explanation": "<p>An EC2 synchronization script requires server maintenance and custom scheduling and error handling.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 721,
+        "question": "<p>A company is evaluating Graviton EC2 instances for a Linux service to improve price performance. It can rebuild its application. Which TWO steps should it include before moving production traffic? (Choose two.)</p>",
+        "choices": [
+          {
+            "solution": "<p>Reuse an x86-only machine image unchanged.</p>",
+            "correct": false,
+            "explanation": "<p>Graviton uses the Arm architecture, so an x86-only image cannot be used unchanged.</p>"
+          },
+          {
+            "solution": "<p>Assume every workload receives an identical fixed percentage saving.</p>",
+            "correct": false,
+            "explanation": "<p>Actual savings depend on workload behavior, instance selection, and measured performance.</p>"
+          },
+          {
+            "solution": "<p>Select an arm64 image and verify or rebuild native dependencies for Arm.</p>",
+            "correct": true,
+            "explanation": "<p>The operating system, application binaries, and native dependencies must support the target architecture.</p>"
+          },
+          {
+            "solution": "<p>Benchmark representative workload throughput, latency, and cost on the proposed instances.</p>",
+            "correct": true,
+            "explanation": "<p>Workload measurements determine whether the candidate meets the service objectives at lower cost.</p>"
+          },
+          {
+            "solution": "<p>Treat a Savings Plan as a binary translation mechanism.</p>",
+            "correct": false,
+            "explanation": "<p>Savings Plans affect billing; they do not translate instruction sets.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 722,
+        "question": "<p>A development Aurora Serverless v2 database is idle overnight. Its supported engine version allows automatic pause at zero ACUs. No persistent connections or incompatible features prevent pausing, and resume latency is acceptable. How can the team reduce idle compute charges?</p>",
+        "choices": [
+          {
+            "solution": "<p>Set minimum capacity to zero ACUs and configure an auto-pause idle timeout.</p>",
+            "correct": true,
+            "explanation": "<p>Supported instances can pause after inactivity, avoiding instance-capacity charges while paused; storage charges remain.</p>"
+          },
+          {
+            "solution": "<p>Keep minimum capacity above zero and assume zero connections stops capacity billing.</p>",
+            "correct": false,
+            "explanation": "<p>An idle instance with a positive capacity minimum does not automatically pause at zero ACUs.</p>"
+          },
+          {
+            "solution": "<p>Enable RDS Proxy specifically to force idle instances to pause.</p>",
+            "correct": false,
+            "explanation": "<p>Proxy connections can prevent auto-pause rather than forcing it.</p>"
+          },
+          {
+            "solution": "<p>Disable all backups to eliminate the running instance capacity charge.</p>",
+            "correct": false,
+            "explanation": "<p>Backup settings do not remove compute charges for an active instance.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 723,
+        "question": "<p>A company has a predictable hourly compute baseline, but expects to shift usage among EC2 instance families and Regions, Lambda, and Fargate. Which commitment provides compute discounts with the requested flexibility?</p>",
+        "choices": [
+          {
+            "solution": "<p>An EC2 Instance Savings Plan tied to one instance family and Region.</p>",
+            "correct": false,
+            "explanation": "<p>This plan does not provide the required flexibility across families, Regions, Lambda, and Fargate.</p>"
+          },
+          {
+            "solution": "<p>One zonal EC2 Reserved Instance as a universal Lambda discount.</p>",
+            "correct": false,
+            "explanation": "<p>An EC2 reservation is not a universal billing discount for these compute services.</p>"
+          },
+          {
+            "solution": "<p>A Spot capacity request that guarantees the baseline for three years.</p>",
+            "correct": false,
+            "explanation": "<p>Spot capacity can be interrupted and is not a long-term guaranteed spending commitment.</p>"
+          },
+          {
+            "solution": "<p>A Compute Savings Plan sized to the stable eligible hourly spend.</p>",
+            "correct": true,
+            "explanation": "<p>Compute Savings Plans cover eligible EC2, Lambda, and Fargate usage with broad configuration flexibility.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 724,
+        "question": "<p>An EC2 batch workload checkpoints frequently and can retry interrupted work. It supports several instance types and Availability Zones. Which approach can reduce compute cost while improving access to available Spot capacity?</p>",
+        "choices": [
+          {
+            "solution": "<p>Request one specific instance type in one Availability Zone only.</p>",
+            "correct": false,
+            "explanation": "<p>A single capacity pool provides fewer alternatives when capacity is constrained.</p>"
+          },
+          {
+            "solution": "<p>Use diversified instance types and zones with a price-capacity-optimized Spot allocation strategy.</p>",
+            "correct": true,
+            "explanation": "<p>Diversification and capacity-aware allocation improve access to lower-cost interruptible capacity.</p>"
+          },
+          {
+            "solution": "<p>Disable checkpointing because Spot interruptions are impossible after launch.</p>",
+            "correct": false,
+            "explanation": "<p>Spot interruptions remain possible and the workload must tolerate them.</p>"
+          },
+          {
+            "solution": "<p>Use Dedicated Hosts exclusively because they always cost less than Spot.</p>",
+            "correct": false,
+            "explanation": "<p>Dedicated Hosts serve placement and licensing needs and do not guarantee lower cost than Spot.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 725,
+        "question": "<p>Private EC2 instances transfer large volumes to S3 in the same Region through a NAT gateway. Internet access is still needed for other destinations. Which targeted change avoids NAT processing for eligible S3 traffic without making the instances public?</p>",
+        "choices": [
+          {
+            "solution": "<p>Enable S3 Versioning only.</p>",
+            "correct": false,
+            "explanation": "<p>Versioning does not change the network route used to reach S3.</p>"
+          },
+          {
+            "solution": "<p>Assign public IP addresses to every instance.</p>",
+            "correct": false,
+            "explanation": "<p>This changes the private-instance design and is unnecessary for S3 connectivity.</p>"
+          },
+          {
+            "solution": "<p>Add an S3 gateway endpoint to the instance route tables and configure the required access policies.</p>",
+            "correct": true,
+            "explanation": "<p>A gateway endpoint routes eligible S3 traffic privately without NAT processing and has no additional endpoint charge.</p>"
+          },
+          {
+            "solution": "<p>Increase the NAT gateway connection timeout.</p>",
+            "correct": false,
+            "explanation": "<p>A timeout change does not bypass NAT processing for S3 transfers.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 726,
+        "question": "<p>A company retains large diagnostic images for several years. They are accessed about once per quarter, but any requested image must be immediately readable with millisecond access and no restore workflow. Which archival storage class matches this access requirement?</p>",
+        "choices": [
+          {
+            "solution": "<p>S3 Glacier Instant Retrieval.</p>",
+            "correct": true,
+            "explanation": "<p>Instant Retrieval supports rarely accessed data that still requires millisecond retrieval without a restore request.</p>"
+          },
+          {
+            "solution": "<p>S3 Glacier Flexible Retrieval with standard restores.</p>",
+            "correct": false,
+            "explanation": "<p>Standard restores require waiting before the archived data can be read.</p>"
+          },
+          {
+            "solution": "<p>S3 Glacier Deep Archive.</p>",
+            "correct": false,
+            "explanation": "<p>Deep Archive retrieval requires an asynchronous restore and does not provide immediate object access.</p>"
+          },
+          {
+            "solution": "<p>S3 One Zone-IA described as an archival class with guaranteed survival of an AZ loss.</p>",
+            "correct": false,
+            "explanation": "<p>One Zone-IA is not the requested archival class, and it stores data in one Availability Zone.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 727,
+        "question": "<p>A team stores billions of 32 KB objects in S3 Intelligent-Tiering. It expects every object to move automatically to cheaper access tiers when unused. Which behavior should the architect include in the cost analysis?</p>",
+        "choices": [
+          {
+            "solution": "<p>Every object moves to Deep Archive Access immediately after upload.</p>",
+            "correct": false,
+            "explanation": "<p>Deep Archive Access is optional and does not apply immediately to every object.</p>"
+          },
+          {
+            "solution": "<p>Every object is billed as if it were at least 1 GB.</p>",
+            "correct": false,
+            "explanation": "<p>Intelligent-Tiering does not apply that minimum object size charge.</p>"
+          },
+          {
+            "solution": "<p>Small objects are deleted automatically instead of monitored.</p>",
+            "correct": false,
+            "explanation": "<p>The size threshold does not cause automatic deletion.</p>"
+          },
+          {
+            "solution": "<p>Objects below 128 KB remain in the Frequent Access tier and are not monitored for automatic tiering.</p>",
+            "correct": true,
+            "explanation": "<p>These objects do not receive automatic access-tier savings; their small size changes the expected benefit.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 728,
+        "question": "<p>A high-request-volume general purpose S3 bucket uses SSE-KMS with a customer managed key. KMS request charges are significant. The company must keep SSE-KMS encryption. Which feature can reduce KMS request traffic for eligible new objects?</p>",
+        "choices": [
+          {
+            "solution": "<p>Switch the bucket to unencrypted object storage.</p>",
+            "correct": false,
+            "explanation": "<p>Removing encryption violates the SSE-KMS requirement.</p>"
+          },
+          {
+            "solution": "<p>Enable S3 Bucket Keys for SSE-KMS.</p>",
+            "correct": true,
+            "explanation": "<p>Bucket Keys reuse a bucket-level key to reduce requests from S3 to KMS while retaining SSE-KMS.</p>"
+          },
+          {
+            "solution": "<p>Enable Transfer Acceleration solely to reduce KMS calls.</p>",
+            "correct": false,
+            "explanation": "<p>Transfer Acceleration changes transfer performance rather than the encryption key-request pattern.</p>"
+          },
+          {
+            "solution": "<p>Disable CloudTrail to eliminate KMS API requests from S3.</p>",
+            "correct": false,
+            "explanation": "<p>Logging configuration does not remove the cryptographic API requests required by S3.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 729,
+        "question": "<p>A service needs searchable operational logs for 30 days and has no requirement to retain older data. Its CloudWatch log groups retain data indefinitely, increasing storage charges. Which managed setting addresses unnecessary retention?</p>",
+        "choices": [
+          {
+            "solution": "<p>Turn off log ingestion completely.</p>",
+            "correct": false,
+            "explanation": "<p>Disabling ingestion removes the required recent operational logs.</p>"
+          },
+          {
+            "solution": "<p>Increase the number of log streams without changing retention.</p>",
+            "correct": false,
+            "explanation": "<p>More streams do not expire old events.</p>"
+          },
+          {
+            "solution": "<p>Set a 30-day retention policy on the relevant log groups.</p>",
+            "correct": true,
+            "explanation": "<p>A retention policy expires older events while preserving the required recent window.</p>"
+          },
+          {
+            "solution": "<p>Delete and recreate the log groups every day.</p>",
+            "correct": false,
+            "explanation": "<p>Daily deletion loses logs still inside the required 30-day window and adds operational work.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 730,
+        "question": "<p>A VPC uses zonal NAT gateways. Private instances in two Availability Zones both route internet-bound traffic through a gateway in one zone. There is substantial cross-zone traffic. The company wants to avoid that traffic path while preserving zonal egress resilience. What should it evaluate?</p>",
+        "choices": [
+          {
+            "solution": "<p>Place a NAT gateway in each active zone and route each private subnet to its local gateway, comparing extra hourly charges with transfer savings.</p>",
+            "correct": true,
+            "explanation": "<p>Local routing avoids the cross-zone NAT path; added gateway charges must be weighed against transfer savings.</p>"
+          },
+          {
+            "solution": "<p>Route every subnet through a gateway in a third zone.</p>",
+            "correct": false,
+            "explanation": "<p>A remote zone retains cross-zone transfer and concentrates egress dependency.</p>"
+          },
+          {
+            "solution": "<p>Assume a zonal NAT gateway automatically moves between zones during an outage.</p>",
+            "correct": false,
+            "explanation": "<p>A zonal gateway does not provide automatic cross-zone relocation.</p>"
+          },
+          {
+            "solution": "<p>Replace each NAT gateway with an internet gateway while keeping private IPv4 instances unchanged.</p>",
+            "correct": false,
+            "explanation": "<p>An internet gateway alone does not provide outbound IPv4 translation for private instances.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 731,
+        "question": "<p>An ECS Fargate worker service processes retryable queue jobs. It can handle interruptions and delays while capacity returns. The team wants discounted spare capacity without managing EC2 hosts. Which design fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Use an EC2 Dedicated Host capacity provider with Fargate tasks.</p>",
+            "correct": false,
+            "explanation": "<p>Dedicated Hosts are an EC2 option and do not provide Fargate spare capacity.</p>"
+          },
+          {
+            "solution": "<p>Use Fargate Spot and assume ECS always replaces unavailable Spot capacity with on-demand Fargate automatically.</p>",
+            "correct": false,
+            "explanation": "<p>Fargate does not automatically substitute on-demand capacity when Spot capacity is unavailable.</p>"
+          },
+          {
+            "solution": "<p>Use Fargate Spot and ignore termination signals while deleting queue messages before processing.</p>",
+            "correct": false,
+            "explanation": "<p>That design can lose unfinished jobs during an interruption.</p>"
+          },
+          {
+            "solution": "<p>Use the FARGATE_SPOT capacity provider and handle termination signals so unfinished jobs can be retried.</p>",
+            "correct": true,
+            "explanation": "<p>Fargate Spot provides discounted interruptible tasks; graceful handling and queue retries preserve work.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 732,
+        "question": "<p>A proposed lifecycle policy moves large objects to S3 Glacier Deep Archive after one day, then deletes them after a total of 30 days. The objects are never needed again. Why might this fail to achieve the expected storage savings?</p>",
+        "choices": [
+          {
+            "solution": "<p>S3 never permits lifecycle expiration of archived objects.</p>",
+            "correct": false,
+            "explanation": "<p>Lifecycle expiration can apply to archived objects; that is not the cost issue.</p>"
+          },
+          {
+            "solution": "<p>Deep Archive has a minimum storage duration, so early deletion can incur charges for the remaining minimum period.</p>",
+            "correct": true,
+            "explanation": "<p>A short retention period can still incur the minimum-duration charge, in addition to transition costs.</p>"
+          },
+          {
+            "solution": "<p>Deep Archive automatically restores every object daily.</p>",
+            "correct": false,
+            "explanation": "<p>Archival storage does not automatically restore objects each day.</p>"
+          },
+          {
+            "solution": "<p>Enabling lifecycle always makes S3 requests free.</p>",
+            "correct": false,
+            "explanation": "<p>Lifecycle transitions have request charges and do not eliminate other request costs.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 736,
+        "question": "<p>A company has completed an initial DataSync copy of a large archive. Only a small fraction of files changes each day before cutover. It wants subsequent runs to avoid retransferring unchanged file contents. Which transfer option fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Transfer all data on every execution.</p>",
+            "correct": false,
+            "explanation": "<p>ALL mode copies all source data instead of comparing for differences.</p>"
+          },
+          {
+            "solution": "<p>Delete the destination after every successful task.</p>",
+            "correct": false,
+            "explanation": "<p>Deleting the destination makes another complete copy necessary.</p>"
+          },
+          {
+            "solution": "<p>Use CHANGED transfer mode for subsequent task executions.</p>",
+            "correct": true,
+            "explanation": "<p>CHANGED mode compares source and destination and transfers differing data and metadata.</p>"
+          },
+          {
+            "solution": "<p>Enable S3 Versioning as the only incremental-transfer setting.</p>",
+            "correct": false,
+            "explanation": "<p>Versioning preserves versions but does not set the DataSync transfer mode.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 739,
+        "question": "<p>A migration team is configuring MGN for hundreds of servers. It wants to separate replication infrastructure from the application instances launched for testing and cutover. What is the role of the staging area subnet?</p>",
+        "choices": [
+          {
+            "solution": "<p>It hosts lightweight replication servers used to receive replicated source data.</p>",
+            "correct": true,
+            "explanation": "<p>MGN uses replication servers in the selected staging subnet; these are distinct from launched application instances.</p>"
+          },
+          {
+            "solution": "<p>It must host one full-size production application instance for every source throughout replication.</p>",
+            "correct": false,
+            "explanation": "<p>Replication infrastructure does not require an always-running full-size application instance for each source.</p>"
+          },
+          {
+            "solution": "<p>It replaces all target application networking after cutover.</p>",
+            "correct": false,
+            "explanation": "<p>Target launch configuration still determines the application instances and their network placement.</p>"
+          },
+          {
+            "solution": "<p>It is an S3 storage class selected through a lifecycle policy.</p>",
+            "correct": false,
+            "explanation": "<p>The staging area is VPC infrastructure, not an object storage class.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 740,
+        "question": "<p>A company moves a self-managed PostgreSQL database from an on-premises VM to RDS for PostgreSQL. It keeps the database engine and makes limited application changes while handing infrastructure management to AWS. Which migration strategy best describes the database move?</p>",
+        "choices": [
+          {
+            "solution": "<p>Retire, because the source VM will be shut down.</p>",
+            "correct": false,
+            "explanation": "<p>Retiring removes a workload from service; the database continues operating on a new platform.</p>"
+          },
+          {
+            "solution": "<p>Repurchase, because every use of a managed service replaces the application with SaaS.</p>",
+            "correct": false,
+            "explanation": "<p>Moving this database to RDS does not replace the business application with a SaaS product.</p>"
+          },
+          {
+            "solution": "<p>Replatform, because the database moves to a managed platform with limited changes.</p>",
+            "correct": true,
+            "explanation": "<p>Replatforming introduces platform improvements while avoiding a complete application redesign.</p>"
+          },
+          {
+            "solution": "<p>Rehost, because the original VM is moved unchanged to EC2.</p>",
+            "correct": false,
+            "explanation": "<p>The scenario replaces self-managed database hosting with RDS rather than moving the VM unchanged.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 746,
+        "question": "<p>A company wants to reduce on-premises file storage while keeping an application that reads and writes through NFS or SMB. Files should be backed by S3, with a local cache for frequently used data. Which hybrid storage solution fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>A one-time DataSync task as the permanent application file interface.</p>",
+            "correct": false,
+            "explanation": "<p>DataSync copies data; it does not expose the required ongoing gateway file interface to applications.</p>"
+          },
+          {
+            "solution": "<p>DMS connected to the local file share.</p>",
+            "correct": false,
+            "explanation": "<p>DMS does not provide a general NFS or SMB interface backed by S3.</p>"
+          },
+          {
+            "solution": "<p>Tape Gateway as a replacement NFS share.</p>",
+            "correct": false,
+            "explanation": "<p>Tape Gateway exposes virtual tape devices rather than this file-share interface.</p>"
+          },
+          {
+            "solution": "<p>Amazon S3 File Gateway.</p>",
+            "correct": true,
+            "explanation": "<p>S3 File Gateway provides NFS and SMB file access backed by S3 with local caching.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 747,
+        "question": "<p>A legacy on-premises application requires iSCSI block volumes. The company wants to keep the primary dataset in AWS and retain only frequently accessed data locally to reduce on-premises storage needs. Which Storage Gateway configuration fits?</p>",
+        "choices": [
+          {
+            "solution": "<p>Volume Gateway with cached volumes.</p>",
+            "correct": true,
+            "explanation": "<p>Cached volumes keep primary data in AWS while caching frequently accessed blocks locally for the iSCSI application.</p>"
+          },
+          {
+            "solution": "<p>Volume Gateway with stored volumes.</p>",
+            "correct": false,
+            "explanation": "<p>Stored volumes keep the entire primary dataset locally, contrary to the local-capacity goal.</p>"
+          },
+          {
+            "solution": "<p>S3 File Gateway mounted as an iSCSI target.</p>",
+            "correct": false,
+            "explanation": "<p>File Gateway exposes file protocols rather than the required iSCSI volume interface.</p>"
+          },
+          {
+            "solution": "<p>An S3 lifecycle rule attached directly to the application disk.</p>",
+            "correct": false,
+            "explanation": "<p>A lifecycle rule does not expose a block volume to the application.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 748,
+        "question": "<p>A company wants to replace physical backup tapes and off-site shipping. It must keep its supported backup software and its virtual tape library integration. Which service provides an AWS-backed virtual tape library?</p>",
+        "choices": [
+          {
+            "solution": "<p>AWS DMS.</p>",
+            "correct": false,
+            "explanation": "<p>DMS moves database data and does not expose virtual tape devices.</p>"
+          },
+          {
+            "solution": "<p>AWS Transfer Family.</p>",
+            "correct": false,
+            "explanation": "<p>Managed file-transfer protocols do not replace the required virtual tape library interface.</p>"
+          },
+          {
+            "solution": "<p>AWS Storage Gateway Tape Gateway.</p>",
+            "correct": true,
+            "explanation": "<p>Tape Gateway presents virtual tape devices to compatible backup software and stores tape data in AWS.</p>"
+          },
+          {
+            "solution": "<p>Amazon EFS as an iSCSI tape changer.</p>",
+            "correct": false,
+            "explanation": "<p>EFS provides NFS file storage rather than the required tape library devices.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 762,
+        "question": "<p>A development team runs low-urgency batch calculations whenever compute capacity is available. Jobs save progress and can resume after a shutdown; neither immediate startup nor uninterrupted execution is required. Which EC2 purchasing model best uses that flexibility to reduce cost?</p>",
+        "choices": [
+          {
+            "solution": "<p>Reserve On-Demand capacity in a particular Availability Zone.</p>",
+            "correct": false,
+            "explanation": "<p>A Capacity Reservation protects capacity availability but does not inherently discount it. Guaranteed immediate capacity is unnecessary for these flexible jobs.</p>"
+          },
+          {
+            "solution": "<p>Commit to Reserved Instance pricing for one or three years.</p>",
+            "correct": false,
+            "explanation": "<p>A long-term commitment can suit predictable baseline usage. The stated ability to wait and tolerate interruptions instead favors discounted spare capacity.</p>"
+          },
+          {
+            "solution": "<p>Run every batch at the normal On-Demand price.</p>",
+            "correct": false,
+            "explanation": "<p>On-Demand avoids a term commitment, but it does not use the spare-capacity discounts that an interruption-tolerant workload can exploit.</p>"
+          },
+          {
+            "solution": "<p>Launch the jobs on EC2 Spot capacity.</p>",
+            "correct": true,
+            "explanation": "<p>Spot offers spare EC2 capacity below On-Demand prices in exchange for possible interruption and variable availability. Checkpointing and retries make the jobs suitable for that tradeoff.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 767,
+        "question": "<p>An engineering firm must retain its SMB-based file workflow while reducing long-term storage costs. Large files are active for their first 10 days, then are kept for years with exceptional retrievals. The firm accepts an explicit restore process with a typical completion time of about 12 hours rather than a strict delivery guarantee. Which design preserves SMB access and uses low-cost archival storage after the active period?</p>",
+        "choices": [
+          {
+            "solution": "<p>Expose FSx for Windows through FSx File Gateway and apply S3 Lifecycle directly to that file system.</p>",
+            "correct": false,
+            "explanation": "<p>FSx File Gateway accesses an FSx file system, not an S3-backed share. S3 Lifecycle cannot move objects directly out of an FSx file system.</p>"
+          },
+          {
+            "solution": "<p>Replace SMB access with direct S3 clients and archive objects in Glacier Flexible Retrieval.</p>",
+            "correct": false,
+            "explanation": "<p>Flexible Retrieval supports archival access, but replacing the client interface violates the explicit requirement to keep the SMB workflow.</p>"
+          },
+          {
+            "solution": "<p>Provide an S3 File Gateway SMB share and transition its backing objects to Glacier Deep Archive after 10 days.</p>",
+            "correct": true,
+            "explanation": "<p>The gateway preserves file access while S3 Lifecycle handles archival. Deep Archive Standard restores typically complete within 12 hours; Bulk can take 48 hours. Archived objects need an explicit restore before uncached file reads can succeed, and large restores can exceed typical times.</p>"
+          },
+          {
+            "solution": "<p>Copy older files with DataSync without selecting a destination storage class or defining restoration.</p>",
+            "correct": false,
+            "explanation": "<p>DataSync supplies a transfer mechanism, but this proposal leaves the archival destination, retained SMB access, and restore workflow unspecified.</p>"
+          }
+        ]
+      },
+      {
+        "questionNumber": 776,
+        "question": "<p>A financial services firm needs more storage for an application that runs in its data center and accesses iSCSI block volumes. It cannot expand local disk capacity for the full dataset, but it can allocate existing space for a cache and upload buffer. The primary dataset should reside durably in AWS while frequently read blocks remain nearby for low-latency access. Direct access through the S3 object API is not required.</p><p>Which solution best meets these requirements?</p>",
+        "choices": [
+          {
+            "solution": "<p>Deploy Storage Gateway Volume Gateway in cached-volume mode and present its volumes to the application over iSCSI.</p>",
+            "correct": true,
+            "explanation": "<p>Cached volumes keep the primary dataset in AWS-managed S3 storage and retain frequently accessed blocks locally. The gateway still needs local cache and upload-buffer disks. Its cloud data is accessed through the gateway volume interface, not as ordinary objects through the S3 API.</p>"
+          },
+          {
+            "solution": "<p>Build a storage tier from EC2 instances and EBS volumes for all frequently accessed blocks.</p>",
+            "correct": false,
+            "explanation": "<p>EC2 and EBS would place this storage in AWS rather than provide the required local cache. A custom implementation also adds management work compared with the managed hybrid volume service.</p>"
+          },
+          {
+            "solution": "<p>Keep objects in S3 and add an ElastiCache cache-aside layer for application reads.</p>",
+            "correct": false,
+            "explanation": "<p>ElastiCache runs in AWS and exposes cache interfaces rather than an on-premises iSCSI volume. This would require application changes and would not provide the requested locally cached block storage.</p>"
+          },
+          {
+            "solution": "<p>Archive the entire dataset using an S3 Glacier storage class alone.</p>",
+            "correct": false,
+            "explanation": "<p>An archival storage class by itself does not expose locally cached iSCSI volumes. Restore-based archive classes also do not suit frequent low-latency reads of the active dataset.</p>"
           }
         ]
       }
